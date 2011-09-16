@@ -16,6 +16,11 @@ global with sharing class ScopingTemplateController {
 		scope.addFeature();
 	}
 	
+	public void addTask()
+	{
+		scope.features[0].addTask();
+	}
+	
 	public void saveScope()
 	{
 		Scope__c scopeRecord = scope.getRecord();
@@ -61,8 +66,30 @@ global with sharing class ScopingTemplateController {
 		return model;
 	}
 	
-	@RemoteAction global static void saveModel( ScopeModel model )
+	@RemoteAction global static void saveModel( String modelJSON )
 	{
-		upsert model;
+		ScopeModel model = new ScopeModel();
+		Scope__c record;
+		List<Scoping_Feature__c> features = new List<Scoping_Feature__c>();
+		
+		JSONObject json = new JSONObject( modelJSON );
+		
+		model.name = json.getString('name');
+		
+		record = model.getRecord();
+		upsert record;
+
+		for( JSONObject.Value jsonFeature : (List<JSONObject.Value>)json.get('features') )
+		{
+			ScopingFeatureModel feature = new ScopingFeatureModel();
+			
+			feature.scopeId = record.Id;
+			feature.name = ((JSONObject)jsonFeature.valueToObject()).getString('name');
+			
+			features.add( feature.getRecord() );
+		}
+		
+		upsert features;
+		
 	}
 }

@@ -97,27 +97,25 @@ SOFTWARE.
 	 * Oct add valueToString	 
 	 */
 	 
-	public class value { 
-		/* apex object to store one of several different data types
-		 * see : http://www.json.org/
-		 */
-		public value() { }
-		public value(boolean bb) { bool  = bb;}
-		public value(integer ii) {num=ii;} 
-		public value(Decimal ii) {dnum= ii;} 
-		public value(string st) {str=st;} 
-		public value( jsonobject oo) { obj = oo; }
-		public value( list<value> vary ) { values = vary; }
+	public class Value { 
+		/* apex object to store one of several different data types */
+		public Value() {}
+		public Value( Boolean bb ) { bool  = bb; }
+		public Value( Integer ii ) { num=ii; }
+		public Value( Decimal ii ) { dnum= ii; } 
+		public Value( String st  ) { str=st; }
+		public Value( JSONObject oo ) { obj = oo; }
+		public Value( list<Value> vary ) { values = vary; }
 		
-		public string str {get;set;}  
-		public integer num {get;set;} 
-		public double dnum {get;set;} 
-		public JSONObject obj {get;set;}	
-		public list<value> values {get;set;}  // array
-		public boolean bool {get;set;} 	
+		public String str {get;set;}
+		public Integer num {get;set;}
+		public Double dnum {get;set;}
+		public JSONObject obj {get;set;}
+		public list<Value> values {get;set;}
+		public Boolean bool {get;set;} 	
 		// if all members are null, value == null
 		// isNull()
-		/* 
+		/*
 		 * value to string is used to output JSON for Google Visualization API
 		 */
 		public string valueToString() { 
@@ -141,6 +139,16 @@ SOFTWARE.
 				return this.obj.valueToString(); 	
 			} 
 			return 'null';	
+		}
+		
+		public Object valueToObject()
+		{
+			if ( str != null ) return str;
+			if ( num != null ) return num;
+			if ( bool != null ) return bool;
+			if ( obj != null ) return obj;
+			if ( values != null ) return values;
+			return null;
 		}
 		
 	} // end of class value
@@ -269,12 +277,8 @@ SOFTWARE.
 		if (ret == null) {
             throw new JSONException('JSONObject[' + key + '] not found.');
         }
-		if ( ret.str != null ) return ret.str;
-		if ( ret.num != null ) return ret.num;
-		if ( ret.bool != null ) return ret.bool;
-		system.assert( ret.obj == null , 'get cannot return nested json ojects'); 
-		// array?
-		return null;
+		
+		return ret.valueToObject();
 	}
 
 
@@ -785,7 +789,7 @@ SOFTWARE.
      * @return this.
      * @ If the value is a non-finite number.
      */
-    public JSONObject putOpt(String key, value value)  {
+    public JSONObject putOpt(String key, Value value)  {
         if (key != null && value != null) {
             data.put(key, value);
         }
@@ -974,7 +978,7 @@ SOFTWARE.
 	public String valueToString() {
 		string ret = '{';
 		for ( string key: this.keys() ) { 
-			ret += '"' + key + '": ' + this.getvalue(key).valueToString() + ',';
+			ret += '"' + key + '": ' + this.getValue(key).valueToString() + ',';
 		}
 		return ret.substring(0,ret.length()-1) + '}';	
 	}
@@ -1309,15 +1313,15 @@ public class JSONTokener {
         String s;
 
        if ( c ==   '"' || c == '\'' ) {
-                return new value( nextString(c) );
+                return new Value( nextString(c) );
        }
        if ( c == '{' )  {  
                 back();
-                return new value( new JSONObject(this) ); 
+                return new Value( new JSONObject(this) ); 
        } 
 		if ( c == '[' || c ==  '(') {
                 back();
-                return new value( JSONArray(this) ); 
+                return new Value( JSONArray(this) ); 
         }
 
         /*
@@ -1349,13 +1353,13 @@ public class JSONTokener {
         }
         if (s.equalsIgnoreCase('true')) {
         	
-            return new value(true);
+            return new Value(true);
         }
         if (s.equalsIgnoreCase('false')) {
-            return new value( false);
+            return new Value( false);
         }
         if (s.equalsIgnoreCase('null')) {
-            return new value();
+            return new Value();
         }
 
         /*
@@ -1371,13 +1375,13 @@ public class JSONTokener {
                 if (s.length() > 2 &&
                         (s.substring(1,2) == 'x' || s.substring(1,2) == 'X')) {
                     try {
-                    	return new value( Integer.valueof(s.substring(2)) );
+                    	return new Value( Integer.valueof(s.substring(2)) );
                     } catch (Exception e) {
                         /* Ignore the error */
                     }
                 } else {
                     try {
-                        return new value( Integer.valueof(s) );
+                        return new Value( Integer.valueof(s) );
                     } catch (Exception e) {
                         /* Ignore the error */
                     }
@@ -1385,16 +1389,16 @@ public class JSONTokener {
             }
             try {
             	Integer si = Integer.valueof(s);
-                return  new value( si );
+                return  new Value( si );
             } catch (System.TypeException e) {
                     try {
-                	return new value( Double.valueof(s) );
+                	return new Value( Double.valueof(s) );
                 }  catch (System.TypeException g) {
                     // fall thru
                 }
             }
         }
-        return new value( s );
+        return new Value( s );
     }
 
 
@@ -1442,9 +1446,9 @@ public class JSONTokener {
      * @param x A JSONTokener
      * @throws JSONException If there is a syntax error.
      */
-    public static list<value> JSONArray(JSONTokener x) {
+    public static list<Value> JSONArray(JSONTokener x) {
         //this();
-        list<value> myArrayList = new list<value>(); 
+        list<Value> myArrayList = new list<Value>(); 
         string c = x.nextClean();
         string q;
         if (c == '[') {
@@ -1556,7 +1560,7 @@ public class JSONTokener {
 		
 		system.debug('value '+ jj.getValue('responseData') );
 		
-		value v = jj.data.get('responseData');
+		Value v = jj.data.get('responseData');
 	 	system.debug( jj.getString('responseDetails') );
 		system.debug( 'response data is '+ v.obj);
 		 
@@ -1664,9 +1668,9 @@ public class JSONTokener {
 	public static  testmethod void test_geocode() {
 		string simple = '{ "Point": { "coordinates": [ -122.0841430, 37.4219720, 0 ] } }';
 		JSONObject jj =  new JSONObject( new  JsonTokener(simple) ) ;	
-		value p = jj.getValue('Point');
+		Value p = jj.getValue('Point');
 		system.debug (p.obj.data.get('coordinates'));
-		value[] vals = p.obj.data.get('coordinates').values;
+		Value[] vals = p.obj.data.get('coordinates').values;
 		system.debug( vals[0].dnum);
 		system.assertEquals(3,vals.size());
 		system.assertEquals(-122.0841430, 	vals[0].dnum);
@@ -1679,4 +1683,29 @@ public class JSONTokener {
 		JSONObject jj = new JSONObject( new  JsonTokener(googlejson)  );	
     	system.assertNotEquals(null,jj);
     }
+    
+	public static testMethod void testNestedObjects()
+	{
+		final String JSON = '{ "name": "SCOPE", "features": [{ "name": "FEATURE", "tasks": [{ "name": "TASK" }] }] }';
+		
+		Test.startTest();
+			JSONObject obj = new JSONObject( JSON );
+		Test.stopTest();
+		
+		System.assertEquals( 'SCOPE', obj.getString('name') );
+		
+		for( Value v : (List<Value>)obj.get('features') )
+		{
+			JSONObject feature = (JSONObject)v.valueToObject();
+			
+			System.assertEquals( 'FEATURE', feature.getString('name') );
+			
+			for( Value v2 : (List<Value>)feature.get('tasks') )
+			{
+				JSONObject task = (JSONObject)v2.valueToObject();
+				
+				System.assertEquals( 'TASK', task.getString('name') );
+			}
+		}
+	}
 }

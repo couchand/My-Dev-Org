@@ -3,13 +3,17 @@ public with sharing class ScopingTaskModel {
 	public String name { get; set; }
 	public String details { get; set; }
 	public Decimal estimate50 { get; set; }
+	public Decimal estimate90 { get; set; }
 	
 	public Scoping_Task__c getRecord()
 	{
 		Scoping_Task__c record = new Scoping_Task__c();
 		
 		record.Scoping_Feature__c = featureId;
+		record.Name = name;
+		record.Details__c = details;
 		record.X50_Estimate__c = estimate50;
+		record.X90_Estimate__c = estimate90;
 		
 		return record;
 	}
