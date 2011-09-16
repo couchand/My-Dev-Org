@@ -1,0 +1,20 @@
+<apex:page standardStylesheets="false" showHeader="false" sidebar="false" standardController="Product__c" recordSetVar="products" >
+<apex:stylesheet value="{!URLFOR($Resource.stylesheet, 'styles.css')}" />
+<h1>Annual Inventory Check</h1>
+<apex:form >
+	<apex:dataTable value="{!products}" var="pitem" rowClasses="odd,even" >
+		<apex:column headerValue="Product">
+			<apex:outputText value="{!pitem.name}" />
+		</apex:column>
+		<apex:column headerValue="Inventory">
+			<apex:outputField value="{!pitem.Total_Inventory__c}" /> 
+		</apex:column>
+		<apex:column headerValue="Physical Count">
+			<apex:inputField value="{!pitem.Total_Inventory__c}" /> 
+		</apex:column>
+	</apex:dataTable>
+	<br />
+	<apex:commandButton action="{!quicksave}" value="Make Update!" />
+	<apex:commandLink action="{!next}" value="Next Page..." rendered="{!hasNext}" />
+</apex:form>
+</apex:page>
