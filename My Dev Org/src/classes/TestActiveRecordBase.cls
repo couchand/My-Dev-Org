@@ -1,6 +1,6 @@
 @isTest
 private class TestActiveRecordBase {
-
+/*
     static testMethod void myUnitTest() {
         ActiveRecordBase arb = new ActiveRecordBase();
         
@@ -26,5 +26,5 @@ private class TestActiveRecordBase {
     	System.assertEquals(false, ActiveRecordBase.value);
     	    	
     }
-    
+  */  
 }

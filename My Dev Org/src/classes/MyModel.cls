@@ -1,4 +1,4 @@
-public with sharing class MyModel extends ActiveRecordBase
+public with sharing class MyModel /*extends ActiveRecordBase*/
 {
 
 }
