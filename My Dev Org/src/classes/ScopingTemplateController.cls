@@ -3,9 +3,15 @@ global with sharing class ScopingTemplateController {
 	{
 		get
 		{
-			if (null == scope)
-				scope = new ScopeModel();
-			
+			if (null == scope){
+				
+				Id scopeId = ApexPages.currentPage().getParameters().get('id');
+				if (null != scopeId)
+					scope = loadScope(scopeId);
+				else
+					scope = new ScopeModel();
+					
+			}	
 			return scope;
 		}
 		set;
@@ -21,10 +27,42 @@ global with sharing class ScopingTemplateController {
 		scope.features[0].addTask();
 	}
 	
+	public ScopeModel loadScope( Id scopeId )
+	{
+		ScopeModel scope = new ScopeModel();
+		
+		Scope__c scopeRecord = [SELECT Id, Name,
+									   Code_Review__c, Deployment__c, Project_Management__c,
+									   Reactive__c, Testing__c, Sum_of_X50_Estimates__c, Total__c
+								FROM Scope__c
+								WHERE Id = :scopeId];
+								
+		scope.setRecord( scopeRecord );
+		
+		List<Scoping_Feature__c> featureRecords = [SELECT Id, Name, Scope__c,
+														(SELECT Id, Name, Scoping_Feature__c,
+																Details__c, X50_Estimate__c, X90_Estimate__c
+														 FROM Scoping_Tasks__r)
+													FROM Scoping_Feature__c
+													WHERE Scope__c = :scopeId];
+		
+		for( Scoping_Feature__c featureRecord : featureRecords )
+		{
+			ScopingFeatureModel feature = scope.addFeature(featureRecord);
+			
+			for( Scoping_Task__c taskRecord : featureRecord.Scoping_Tasks__r )
+			{
+				feature.addTask(taskRecord);
+			}
+		}
+		
+		return scope;
+	}
+	
 	public void saveScope()
 	{
 		Scope__c scopeRecord = scope.getRecord();
-		insert scopeRecord;
+		upsert scopeRecord;
 		
 		List<Scoping_Feature__c> featureRecords = new List<Scoping_Feature__c>();
 		List<Scoping_Task__c> taskRecords = new List<Scoping_Task__c>();
@@ -37,22 +75,17 @@ global with sharing class ScopingTemplateController {
 			
 			featureRecords.add( feature.getRecord() );
 			
-			insert featureRecord;
+			upsert featureRecord;
 			
-			feature.Id = featureRecord.Id;
-		}
-		
-		for( ScopingFeatureModel feature : scope.features )
-		{
 			for( ScopingTaskModel task : feature.tasks )
 			{
-				task.featureId = feature.Id;
+				task.featureId = featureRecord.Id;
 				
 				taskRecords.add( task.getRecord() );
 			}
 		}
 		
-		insert taskRecords;
+		upsert taskRecords;
 	}
 	
 	@RemoteAction global static ScopeModel getNewModel()

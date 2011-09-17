@@ -162,7 +162,7 @@
 					Subtotal
 				</td>
 				<td>
-					<input type="text" class="number" id="subtotal_50" disabled="true" />
+					<input type="text" class="number" id="subtotal_50" disabled="true" value="{!scope.estimate50}" />
 				</td>
 				<td>
 					<input type="text" class="number" id="subtotal_90" disabled="true" />
@@ -242,7 +242,7 @@
 					<strong>Total</strong>
 				</td>
 				<td>
-					<input type="text" class="number" id="scope_total" disabled="true" />
+					<input type="text" class="number" id="scope_total" disabled="true" value="{!scope.total}"/>
 				</td>
 				<td>
 					<apex:commandButton action="{!saveScope}" value="Save"/>

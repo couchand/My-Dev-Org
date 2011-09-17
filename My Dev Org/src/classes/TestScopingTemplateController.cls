@@ -37,7 +37,7 @@ private class TestScopingTemplateController
 			controller.saveScope();
 		Test.stopTest();
 		
-		Scope__c record = [SELECT Id, Name, (SELECT Name, Scope__c FROM Scoping_Features__r) FROM Scope__c  WHERE CreatedDate > :Date.today() LIMIT 1];
+		Scope__c record = [SELECT Id, Name, (SELECT Name, Scope__c FROM Scoping_Features__r) FROM Scope__c  ORDER BY CreatedDate DESC LIMIT 1];
 		
 		System.assertEquals( TEST_PROJECT_NAME, record.Name, 'The Project Name should be populated.' );
 		System.assertEquals( 1, record.Scoping_Features__r.size(), 'The Scope model should have one feature.' );
