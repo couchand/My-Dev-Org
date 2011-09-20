@@ -1,17 +1,21 @@
-<apex:page title="Scoping Template" controller="ScopingTemplateController">
-	<script type="text/javascript" src="http://code.jquery.com/jquery.min.js"/>
-	<script type="text/javascript" src="http://code.jquery.com/ui/jquery-ui-git.js"/>
+<apex:page title="Scoping Template" controller="ScopingTemplateController" showHeader="true" sidebar="true">
+	<apex:includeScript value="http://code.jquery.com/jquery.min.js"/>
+	<apex:includeScript value="http://code.jquery.com/ui/jquery-ui-git.js"/>
+	
+	<apex:includeScript value="{!URLFOR($Resource.jQueryFormula, '/src/jquery.form-u-la.js')}"/>
+	
 	<script type="text/javascript">
 	
-	var $j = jQuery.noConflict();
+	var $j;
 	
-	function recalculate(){
+	function setupFormulas(){
 	
+		/*
 		var sum_of_squares = 0;
 		var sum_of_estimates_50 = 0;
 		var sum_of_estimates_90 = 0;
 		
-		$j('.task').each(function(){
+		$j('.task').each(function(){			
 			var estimate_50 = parseInt( $j(this).find('.estimate_50').val() );
 			var estimate_90 = parseInt( $j(this).find('.estimate_90').val() );
 			
@@ -32,16 +36,48 @@
 		
 		if (!$j('[id$="reactive"]').data('tainted'))
 			$j('[id$="reactive"]').val(reactive_time);
+		*/
 		
+		$j('[id$="reactive"]').live_formula({
+			fifties: '.estimate_50',
+			nineties: '.estimate_90'
+		}, function(i){
+			var sum_of_squares = 0;
+			$j.each( i.fifties, function(index, val){
+				var diff = i.nineties[index] - val;
+				sum_of_squares += diff * diff;
+			});
+			return Math.sqrt( util.sum( sum_of_squares ) );
+		},{
+			taintable: true
+		});
+		
+		/*
 		$j('[id$="subtotal_50"]').val(sum_of_estimates_50);
 		$j('[id$="subtotal_90"]').val(sum_of_estimates_90);
+		*/
 		
+		$j('[id$="subtotal_50"]').live_formula('.estimate_50', util.sum);
+		$j('[id$="subtotal_90"]').live_formula('.estimate_90', util.sum);
+		
+		/*
 		var development_time = sum_of_estimates_50 + reactive_time;
 		var code_review_time = Math.round( development_time / 8.0 );
 		
 		if (!$j('[id$="code_review"]').data('tainted'))
 			$j('[id$="code_review"]').val(code_review_time);
+		*/
 		
+		$j('[id$="code_review"]').live_formula({
+			fifties:		'.estimate50',
+			reactive:		'[id$="reactive"]'
+		}, function(i){
+			return (util.sum(i.fifties) + i.reactive) / 8.0;
+		},{
+			taintable: true
+		});
+		
+		/*
 		var total = sum_of_estimates_50;
 		
 		$j('.additionals').each(function(){
@@ -51,26 +87,23 @@
 		});
 		
 		$j('#scope_total').val(total);
-	
+		*/
 	}
 	
-	$j(function(){
-	
-	/*	$j('#new_feature').find('a').click(function(){
-			$j('#new_feature').before('<tr class="feature_head"><td class="sorthandle">M</td><td class="feature_name"><input type="text"/></td><td/><td/><td/><td/></tr>')
-							  .before('<tr class="feature_tail new_task"><td/><td/><td/><td><a href="#">New task...</a></td><td/><td/><td/><td/></tr>');
-		});
+	jQuery(function(){
 		
-		$j('.new_task').find('a').live('click',function(){
-			$j(this).parents('.new_task').before('<tr class="task"><td/><td class="feature_name"/><td class="sorthandle">M</td><td class="task_name"><input type="text"/></td><td class="task_detail"><input type="text" /></td><td><input type="text" class="estimate_50 number input"/></td><td><input type="text" class="estimate_90 number input"/></td></tr>');
-			$j('#scope_table').sortable('refresh');
-		});*/
+		$j = jQuery;//.noConflict();
 		
-		$j('#scope_table').sortable({ items: 'tr.task', handle: 'td.sorthandle', axis: 'y' });
+		$j('.task_list').sortable({ handle: '.sorthandle',
+									connectWith: '.task_list',
+									axis: 'y',
+									update: function(event, ui) { console.log(event); console.log(ui); }
+								 });
+
+		$j('.feature_list').sortable({ handle: '.feature_head .sorthandle', axis: 'y' });
 		
-		/*$j('input[type="text"]').val(0);*/
-		
-		$j('.input').live('blur',recalculate);
+		/*$j('.input').live('blur',recalculate);*/
+		setupFormulas();
 		
 		/*$j('.taintable').each(function(){
 			$j(this).data('tainted',false);
@@ -83,171 +116,183 @@
 				recalculate();
 			}
 		});*/
-		
-		/*ScopingTemplateController.getNewModel( function( response ){
-			console.log( response );
-			ScopingTemplateController.saveModel( JSON.stringify( response ), function( innerResponse ){
-				console.log( innerResponse );
-			});
-		});*/
 	
 	});
 	
 	</script>
 	<style type="text/css">
 	
-	.feature_name, .task_name, .task_details {
+/*---RESET---*/ 
+#scope /*html*/, #scope body, #scope div, #scope span, #scope applet, #scope object, #scope iframe,
+#scope h1, #scope h2, #scope h3, #scope h4, #scope h5, #scope h6, #scope p, #scope blockquote, #scope pre,
+#scope a, #scope abbr, #scope acronym, #scope address, #scope big, #scope cite, #scope code, #scope del,
+#scope dfn, #scope em, #scope font, #scope img, #scope ins, #scope kbd, #scope q, #scope s, #scope samp, #scope small,
+#scope strike, #scope strong, #scope sub, #scope sup, #scope tt, #scope var, #scope dl, #scope dt, #scope dd,
+#scope ol, #scope ul, #scope li, #scope fieldset, #scope form, #scope label, #scope legend,
+#scope table, #scope caption, #scope tbody, #scope tfoot, #scope thead, #scope tr, #scope th, #scope td {    
+   margin: 0;
+   padding: 0;
+   border: 0;
+   border: thin solid black;
+   outline: 0;
+   font-weight: inherit;
+   font-style: inherit;
+   font-size: 100%;
+   font-family: inherit;
+   vertical-align: baseline;
+}
+
+	#scope ul {
+		list-style-type: none;
+	}
+
+	#scope .feature_name, #scope .task_name, #scope .task_details {
 		width: 200px;
 	}
 	
-	.number
-	/*.estimate_50, .estimate_90*/ {
+	#scope .number {
 		width: 75px;
 	}
 	
-	#scope_table {
-		width: 800px;
+	#scope .headers div, #scope .footers div {
+		display: inline-block;
 	}
 	
-	input {
-		color: #000;
-		background-color: #fff;
+	#scope .feature_head, #scope .task,
+	#scope .feature_list, #scope .task_list {
+		position: relative;
+	}
+	
+	#scope .feature_list, #scope .task_list {
+		padding: 9px 0;
+	}
+	
+	#scope .sorthandle {
+		position: absolute;
+		top: 0px;
+		left: -15px;
+	}
+	
+	#scope .feature_list, #scope .headers .feature_name, #scope .footers .feature_name, #scope #new_feature {
+		margin-left: 15px;
+	}
+	
+	#scope .task_list {
+		margin-left: 200px;
+	}
+	
+	#scope #subtotals, #scope #deployment, #scope #reactive, #scope #code_review,
+	#scope #testing, #scope #project_management, #scope #total {
+		margin-left: 415px;
+	}
+	
+	#scope #subtotals .summary_label, #scope #deployment .summary_label,
+	#scope #reactive .summary_label, #scope #code_review .summary_label,
+	#scope #testing .summary_label, #scope #project_management .summary_label,
+	#scope #total .summary_label {
+		width: 200px;
+		text-align: right;
+		display: inline-block;
 	}
 	
 	</style>
 	<apex:form >
-		<apex:inputText value="{!scope.Name}"/><br/>
-		
-		<table id="scope_table">
-			<tr>
-				<th/>
-				<th style="width:30%">Feature</th>
-				<th/>
-				<th style="width:30%">Tasks</th>
-				<th style="width:30%">Details</th>
-				<th style="width:5%">Estimate 50%</th>
-				<th style="width:5%">Estimate 90%</th>
-			</tr>
+		<div id="scope">
+			<div id="scope_name">
+				<apex:outputLabel value="Project Name" for="scopeName"/>
+				<apex:inputText id="scopeName" value="{!scope.Name}"/>
+			</div>
+			
+			<div class="headers">
+				<div class="feature_name">Feature</div>
+				<div class="task_name">Tasks</div>
+				<div class="task_details">Details</div>
+				<div class="number">Estimate 50%</div>
+				<div class="number">Estimate 90%</div>
+			</div>
+			
+			<ul class="feature_list">
 			<apex:repeat id="features" value="{!scope.features}" var="feature">
 				
-				<tr class="feature_head"><td class="sorthandle">M</td><td class="feature_name"><apex:inputText value="{!feature.Name}"/></td><td/><td/><td/><td/></tr>
-				
-				<apex:repeat id="tasks" value="{!feature.tasks}" var="task">
-				
-					<tr class="task"><td/><td class="feature_name"/><td class="sorthandle">M</td><td class="task_name"><apex:inputText value="{!task.Name}"/></td><td class="task_detail"><apex:inputText value="{!task.details}"/></td><td><apex:inputText value="{!task.estimate50}" styleClass="estimate_50 number input"/></td><td><apex:inputText value="{!task.estimate90}" styleClass="estimate_90 number input"/></td></tr>
-				
-				</apex:repeat>
-				
-				<tr class="feature_tail new_task"><td/><td/><td/><td><apex:commandButton action="{!addTask}" value="AddTask" /></td><td/><td/><td/><td/></tr>
+				<li class="feature">
+					<div class="feature_head">
+						<apex:inputText value="{!feature.Name}" styleClass="feature_name"/>
+						<div class="sorthandle">M</div>
+					</div>
+					
+					<ul class="task_list">
+					<apex:repeat id="tasks" value="{!feature.tasks}" var="task">
+					
+						<li class="task">
+							<apex:inputText value="{!task.Name}" styleClass="task_name"/>
+							<apex:inputText value="{!task.details}" styleClass="task_detail"/>
+							<apex:inputText value="{!task.estimate50}" styleClass="estimate_50 number input"/>
+							<apex:inputText value="{!task.estimate90}" styleClass="estimate_90 number input"/>
+							<div class="sorthandle">M</div>
+						</li>
+					
+					</apex:repeat>
+					</ul>
+					
+					<div class="feature_tail new_task">
+						<apex:commandButton action="{!addTask}" value="AddTask" />
+					</div>
+				</li>
 			
 			</apex:repeat>
+			</ul>
 			
-			<tr>
-				<th/>
-				<th style="width:30%">Feature</th>
-				<th/>
-				<th style="width:30%">Tasks</th>
-				<th style="width:30%">Details</th>
-				<th style="width:5%">Estimate 50%</th>
-				<th style="width:5%">Estimate 90%</th>
-			</tr>
-			<tr id="new_feature">
-				<td/>
-				<td>
-					<apex:commandButton action="{!addFeature}" value="Add Feature"/>
-				</td>
-				<td/>
-				<td/>
-				<td>
-					Subtotal
-				</td>
-				<td>
-					<input type="text" class="number" id="subtotal_50" disabled="true" value="{!scope.estimate50}" />
-				</td>
-				<td>
-					<input type="text" class="number" id="subtotal_90" disabled="true" />
-				</td>
-			</tr>
-			<tr>
-				<td/>
-				<td/>
-				<td/>
-				<td/>
-				<td>
-					Deployment
-				</td>
-				<td>
-					<apex:inputText styleClass="number additionals input" value="{!scope.deployment}"/>
-				</td>
-				<td/>
-			</tr>
-			<tr>
-				<td/>
-				<td/>
-				<td/>
-				<td/>
-				<td>
-					Reactive
-				</td>
-				<td>
-					<apex:inputText styleClass="number additionals taintable" id="reactive" value="{!scope.reactive}"/>
-				</td>
-				<td/>
-			</tr>
-			<tr>
-				<td/>
-				<td/>
-				<td/>
-				<td/>
-				<td>
-					Code Review
-				</td>
-				<td>
-					<apex:inputText styleClass="number additionals taintable" id="code_review" value="{!scope.codeReview}"/>
-				</td>
-				<td/>
-			</tr>
-			<tr>
-				<td/>
-				<td/>
-				<td/>
-				<td/>
-				<td>
-					Testing
-				</td>
-				<td>
-					<apex:inputText styleClass="number additionals input" value="{!scope.testing}"/>
-				</td>
-				<td/>
-			</tr>
-			<tr>
-				<td/>
-				<td/>
-				<td/>
-				<td/>
-				<td>
-					Project Management
-				</td>
-				<td>
-					<apex:inputText styleClass="number additionals input" value="{!scope.projectManagement}"/>
-				</td>
-				<td/>
-			</tr>
-			<tr>
-				<td/>
-				<td/>
-				<td/>
-				<td/>
-				<td>
-					<strong>Total</strong>
-				</td>
-				<td>
-					<input type="text" class="number" id="scope_total" disabled="true" value="{!scope.total}"/>
-				</td>
-				<td>
-					<apex:commandButton action="{!saveScope}" value="Save"/>
-				</td>
-			</tr>
-		</table>
+			<div class="footers">
+				<div class="feature_name">Feature</div>
+				<div class="task_name">Tasks</div>
+				<div class="task_details">Details</div>
+				<div class="number">Estimate 50%</div>
+				<div class="number">Estimate 90%</div>
+			</div>
+			
+			<div id="new_feature">
+				<apex:commandButton action="{!addFeature}" value="Add Feature"/>
+			</div>
+			
+			<div id="subtotals">
+				<div class="summary_label"><span>Subtotal</span></div>
+				<input type="text" class="number" id="subtotal_50" disabled="true" value="{!scope.estimate50}" />
+				<input type="text" class="number" id="subtotal_90" disabled="true" />
+			</div>
+			
+			<div id="deployment">
+				<div class="summary_label"><span>Deployment</span></div>
+				<apex:inputText styleClass="number additionals input" value="{!scope.deployment}"/>
+			</div>
+			
+			<div id="reactive">
+				<div class="summary_label"><span>Reactive</span></div>
+				<apex:inputText styleClass="number additionals taintable" id="reactive" value="{!scope.reactive}"/>
+			</div>
+			
+			<div id="code_review">
+				<div class="summary_label"><span>Code Review</span></div>
+				<apex:inputText styleClass="number additionals taintable" id="code_review" value="{!scope.codeReview}"/>
+			</div>
+			
+			<div id="testing">
+				<div class="summary_label"><span>Testing</span></div>
+				<apex:inputText styleClass="number additionals input" value="{!scope.testing}"/>
+			</div>
+			
+			<div id="project_management">
+				<div class="summary_label"><span>Project Management</span></div>
+				<apex:inputText styleClass="number additionals input" value="{!scope.projectManagement}"/>
+			</div>
+			
+			<div id="total">
+				<div class="summary_label"><span>Total</span></div>
+				<input type="text" class="number" id="scope_total" disabled="true" value="{!scope.total}"/>
+			</div>
+			
+			<div id="save_scope">
+				<apex:commandButton action="{!saveScope}" value="Save Scope"/>
+			</div>
+		</div>
 	</apex:form>
 </apex:page>

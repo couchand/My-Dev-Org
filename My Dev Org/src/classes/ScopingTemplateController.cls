@@ -88,7 +88,7 @@ global with sharing class ScopingTemplateController {
 		upsert taskRecords;
 	}
 	
-	@RemoteAction global static ScopeModel getNewModel()
+	/*@RemoteAction global static ScopeModel getNewModel()
 	{
 		ScopeModel model = new ScopeModel();
 		model.name = 'SCOPE';
@@ -124,5 +124,5 @@ global with sharing class ScopingTemplateController {
 		
 		upsert features;
 		
-	}
+	}*/
 }
