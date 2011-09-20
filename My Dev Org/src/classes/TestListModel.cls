@@ -15,6 +15,22 @@ private class TestListModel
 		System.assert( actualList.isEmpty(), 'An empty collection should return an empty list.' );
 	}
 	
+	static testMethod void testSize()
+	{
+		ListModel c = new ListModel();
+		
+		for( Integer i = NUM_ENTRIES; i > 0; i-- )
+		{
+			c.add( new TestImplementation( i ) );
+		}
+		
+		Test.startTest();
+			Integer size = c.size();
+		Test.stopTest();
+		
+		System.assertEquals( NUM_ENTRIES, size, 'A collection should return its size.' );
+	}
+	
 	static testMethod void testGetEntryList()
 	{
 		ListModel c = new ListModel();

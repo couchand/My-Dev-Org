@@ -13,6 +13,11 @@ public with sharing class ListModel
 		theList.add( c );
 	}
 	
+	public Integer size()
+	{
+		return theList.size();
+	}
+	
 	public void reorder( List<Integer> newOrder )
 	{
 		List<Element> newList = theList.clone();
