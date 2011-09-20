@@ -133,7 +133,7 @@
    margin: 0;
    padding: 0;
    border: 0;
-   border: thin solid black;
+   /*border: thin solid black;*/
    outline: 0;
    font-weight: inherit;
    font-style: inherit;
@@ -141,11 +141,15 @@
    font-family: inherit;
    vertical-align: baseline;
 }
-
+	
+	#scope {
+		width: 800px;
+	}
+	
 	#scope ul {
 		list-style-type: none;
 	}
-
+	
 	#scope .feature_name, #scope .task_name, #scope .task_details {
 		width: 200px;
 	}
@@ -158,13 +162,28 @@
 		display: inline-block;
 	}
 	
-	#scope .feature_head, #scope .task,
+	#scope .feature_head, #scope .task_detail,
 	#scope .feature_list, #scope .task_list {
 		position: relative;
 	}
 	
 	#scope .feature_list, #scope .task_list {
+		margin: 6px 0;
 		padding: 9px 0;
+	}
+	
+	#scope .feature_list/*, #scope .task_list*/ {
+		border-top: 1px solid black;
+		border-bottom: 1px solid black;
+	}
+	
+	#scope .feature/*, #scope .task*/ {
+		border-top: 1px solid black;
+		padding: 6px 0 6px 15px;
+	}
+	
+	#scope .feature:first-child/*, #scope .task:first-child*/ {
+		border-style: none;
 	}
 	
 	#scope .sorthandle {
@@ -173,11 +192,11 @@
 		left: -15px;
 	}
 	
-	#scope .feature_list, #scope .headers .feature_name, #scope .footers .feature_name, #scope #new_feature {
+	/*#scope .feature_list,*/ #scope .headers .feature_name, #scope .footers .feature_name, #scope #new_feature {
 		margin-left: 15px;
 	}
 	
-	#scope .task_list {
+	#scope .task_list, #scope .new_task {
 		margin-left: 200px;
 	}
 	
@@ -224,11 +243,13 @@
 					<apex:repeat id="tasks" value="{!feature.tasks}" var="task">
 					
 						<li class="task">
-							<apex:inputText value="{!task.Name}" styleClass="task_name"/>
-							<apex:inputText value="{!task.details}" styleClass="task_detail"/>
-							<apex:inputText value="{!task.estimate50}" styleClass="estimate_50 number input"/>
-							<apex:inputText value="{!task.estimate90}" styleClass="estimate_90 number input"/>
-							<div class="sorthandle">M</div>
+							<div class="task_detail">
+								<apex:inputText value="{!task.Name}" styleClass="task_name"/>
+								<apex:inputText value="{!task.details}" styleClass="task_detail"/>
+								<apex:inputText value="{!task.estimate50}" styleClass="estimate_50 number input"/>
+								<apex:inputText value="{!task.estimate90}" styleClass="estimate_90 number input"/>
+								<div class="sorthandle">M</div>
+							</div>
 						</li>
 					
 					</apex:repeat>
