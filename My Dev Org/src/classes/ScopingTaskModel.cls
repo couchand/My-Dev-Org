@@ -1,4 +1,4 @@
-public with sharing class ScopingTaskModel {
+public with sharing class ScopingTaskModel extends ListModel.Element {
 	public Id id { get; private set; }
 	public Id featureId { get; set; }
 	public String name { get; set; }

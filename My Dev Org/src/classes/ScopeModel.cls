@@ -10,20 +10,29 @@ global with sharing class ScopeModel {
 	public Decimal total { get; private set; }
 	public Decimal estimate50 { get; private set; }
 	
+	private ListModel featureList;
+	
+	public ScopeModel()
+	{
+		featureList = new ListModel();
+	}
+	
 	public List<ScopingFeatureModel> features
 	{
 		get
 		{
-			if (null == features)
-				features = new List<ScopingFeatureModel>();
-			return features;
+			List<ScopingFeatureModel> models = new List<ScopingFeatureModel>();
+			for( ListModel.Element el : featureList.getList() )
+			{
+				models.add((ScopingFeatureModel)el);
+			}
+			return models;
 		}
-		private set;
 	}
 	
 	public void addFeature()
 	{
-		features.add(new ScopingFeatureModel());
+		featureList.add(new ScopingFeatureModel());
 	}
 	
 	public ScopingFeatureModel addFeature(Scoping_Feature__c featureRecord)
@@ -32,7 +41,7 @@ global with sharing class ScopeModel {
 		
 		feature.setRecord( featureRecord );
 		
-		features.add( feature );
+		featureList.add( feature );
 		
 		return feature;
 	}

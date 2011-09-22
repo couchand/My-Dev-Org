@@ -1,36 +1,43 @@
-public with sharing class ScopingFeatureModel {
+public with sharing class ScopingFeatureModel extends ListModel.Element {
 	public Id scopeId { get; set; }
 	public Id id { get; private set; }
 	public String name { get; set; }
+	
+	private ListModel taskList;
 	
 	public List<ScopingTaskModel> tasks
 	{
 		get
 		{
-			if (null == tasks)
-				tasks = new List<ScopingTaskModel>();
-			return tasks;
+			List<ScopingTaskModel> models = new List<ScopingTaskModel>();
+			for( ListModel.Element el : taskList.getList() )
+			{
+				models.add((ScopingTaskModel)el);
+			}
+			return models;
 		}
-		private set;
 	}
 	
 	public ScopingFeatureModel()//Id scopeId)
 	{
 		//this.scopeId = scopeId;
+		taskList = new ListModel();
 	}
 	
 	public void addTask()
 	{
-		tasks.add(new ScopingTaskModel());
+		taskList.add(new ScopingTaskModel());
 	}
 	
-	public void addTask(Scoping_Task__c taskRecord)
+	public ScopingTaskModel addTask(Scoping_Task__c taskRecord)
 	{
 		ScopingTaskModel task = new ScopingTaskModel();
 		
 		task.setRecord(taskRecord);
 		
-		tasks.add(task);
+		taskList.add(task);
+		
+		return task;
 	}
 	
 	public void setRecord(Scoping_Feature__c record)
