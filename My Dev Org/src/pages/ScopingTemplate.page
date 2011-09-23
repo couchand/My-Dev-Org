@@ -174,7 +174,7 @@
 			<ul class="feature_list">
 			<apex:repeat id="features" value="{!scope.features}" var="feature">
 				
-				<li class="feature" id="feature_{!feature.index}">
+				<li class="feature" id="feature_{!feature.index}" data-feature-id="{!feature.index}">
 					<div class="feature_head">
 						<apex:inputText value="{!feature.Name}" styleClass="feature_name"/>
 						<div class="sorthandle">M</div>
@@ -183,7 +183,7 @@
 					<ul class="task_list">
 					<apex:repeat id="tasks" value="{!feature.tasks}" var="task">
 					
-						<li class="task" id="task_{!feature.index}_{!task.index}">
+						<li class="task" id="task_{!feature.index}_{!task.index}" data-feature-id="{!feature.index}" data-task-id="{!task.index}">
 							<div class="task_detail">
 								<apex:inputText value="{!task.Name}" styleClass="task_name"/>
 								<apex:inputText value="{!task.details}" styleClass="task_detail"/>
