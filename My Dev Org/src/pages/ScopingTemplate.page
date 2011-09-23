@@ -1,65 +1,7 @@
 <apex:page title="Scoping Template" controller="ScopingTemplateController" showHeader="true" sidebar="true">
 	<apex:includeScript value="http://code.jquery.com/jquery.min.js"/>
 	<apex:includeScript value="http://code.jquery.com/ui/jquery-ui-git.js"/>
-	
 	<apex:includeScript value="{!URLFOR($Resource.jQueryFormula, '/src/jquery.form-u-la.js')}"/>
-	
-	<script type="text/javascript">
-	
-	var $j;
-	
-	function setupFormulas(){
-	
-		$j('#reactive input').live_formula({
-			fifties: '.estimate_50',
-			nineties: '.estimate_90'
-		}, function(i){
-			var sum_of_squares = 0;
-			$j.each( i.fifties, function(index, val){
-				var diff = i.nineties[index] - val;
-				sum_of_squares += diff * diff;
-			});
-			return Math.sqrt( util.sum( sum_of_squares ) );
-		},{
-			taintable: true
-		});
-		
-		$j('[id$="subtotal_50"]').live_formula('.estimate_50', util.sum);
-		$j('[id$="subtotal_90"]').live_formula('.estimate_90', util.sum);
-		
-		$j('[id$="code_review"]').live_formula({
-			fifties:		'#subtotal_50',
-			reactive:		'#reactive input',
-			deployment:		'#deployment input'
-		}, function(i){
-			return (i.fifties + i.reactive + i.deployment) / 8.0;
-		},{
-			taintable: true
-		});
-		
-		$j('#scope_total').live_formula('.additionals, #subtotal_50', util.sum);
-	}
-	
-	jQuery(function(){
-		
-		$j = jQuery;//.noConflict();
-		
-		$j('.task_list').sortable({ handle: '.sorthandle',
-									connectWith: '.task_list',
-									axis: 'y',
-									update: function(event, ui) { console.log(event); console.log(ui); }
-								 });
-
-		$j('.feature_list').sortable({ handle: '.feature_head .sorthandle', axis: 'y' });
-		
-		setupFormulas();
-		
-		$('.estimate_50').first().trigger('blur');
-		$('.estimate_90').first().trigger('blur');
-	
-	});
-	
-	</script>
 	<style type="text/css">
 	
 /*---RESET---*/ 
@@ -154,7 +96,63 @@
 		display: inline-block;
 	}
 	
-	</style>
+	</style>	
+	<script type="text/javascript">
+	
+	var $j;
+	
+	function setupFormulas(){
+	
+		$j('#reactive input').live_formula({
+			fifties: '.estimate_50',
+			nineties: '.estimate_90'
+		}, function(i){
+			var sum_of_squares = 0;
+			$j.each( i.fifties, function(index, val){
+				var diff = i.nineties[index] - val;
+				sum_of_squares += diff * diff;
+			});
+			return Math.sqrt( util.sum( sum_of_squares ) );
+		},{
+			taintable: true
+		});
+		
+		$j('[id$="subtotal_50"]').live_formula('.estimate_50', util.sum);
+		$j('[id$="subtotal_90"]').live_formula('.estimate_90', util.sum);
+		
+		$j('[id$="code_review"]').live_formula({
+			fifties:		'#subtotal_50',
+			reactive:		'#reactive input',
+			deployment:		'#deployment input'
+		}, function(i){
+			return (i.fifties + i.reactive + i.deployment) / 8.0;
+		},{
+			taintable: true
+		});
+		
+		$j('#scope_total').live_formula('.additionals, #subtotal_50', util.sum);
+	}
+	
+	jQuery(function(){
+		
+		$j = jQuery;//.noConflict();
+		
+		$j('.task_list').sortable({ handle: '.sorthandle',
+									connectWith: '.task_list',
+									axis: 'y',
+									update: function(event, ui) { console.log(event); console.log(ui); }
+								 });
+
+		$j('.feature_list').sortable({ handle: '.feature_head .sorthandle', axis: 'y' });
+		
+		setupFormulas();
+		
+		$('.estimate_50').first().trigger('blur');
+		$('.estimate_90').first().trigger('blur');
+	
+	});
+	
+	</script>
 	<apex:form >
 		<div id="scope">
 			<div id="scope_name">
