@@ -10,35 +10,7 @@
 	
 	function setupFormulas(){
 	
-		/*
-		var sum_of_squares = 0;
-		var sum_of_estimates_50 = 0;
-		var sum_of_estimates_90 = 0;
-		
-		$j('.task').each(function(){			
-			var estimate_50 = parseInt( $j(this).find('.estimate_50').val() );
-			var estimate_90 = parseInt( $j(this).find('.estimate_90').val() );
-			
-			if (!isNaN(estimate_50) && !isNaN(estimate_90)){
-				var diff = estimate_90 - estimate_50;
-				
-				sum_of_squares += diff*diff;
-			}
-			if (!isNaN(estimate_50)){
-				sum_of_estimates_50 += estimate_50;
-			}
-			if (!isNaN(estimate_90)){
-				sum_of_estimates_90 += estimate_90;
-			}
-		});
-		
-		var reactive_time = Math.round(Math.sqrt(sum_of_squares));
-		
-		if (!$j('[id$="reactive"]').data('tainted'))
-			$j('[id$="reactive"]').val(reactive_time);
-		*/
-		
-		$j('[id$="reactive"]').live_formula({
+		$j('#reactive input').live_formula({
 			fifties: '.estimate_50',
 			nineties: '.estimate_90'
 		}, function(i){
@@ -52,42 +24,20 @@
 			taintable: true
 		});
 		
-		/*
-		$j('[id$="subtotal_50"]').val(sum_of_estimates_50);
-		$j('[id$="subtotal_90"]').val(sum_of_estimates_90);
-		*/
-		
 		$j('[id$="subtotal_50"]').live_formula('.estimate_50', util.sum);
 		$j('[id$="subtotal_90"]').live_formula('.estimate_90', util.sum);
 		
-		/*
-		var development_time = sum_of_estimates_50 + reactive_time;
-		var code_review_time = Math.round( development_time / 8.0 );
-		
-		if (!$j('[id$="code_review"]').data('tainted'))
-			$j('[id$="code_review"]').val(code_review_time);
-		*/
-		
 		$j('[id$="code_review"]').live_formula({
-			fifties:		'.estimate50',
-			reactive:		'[id$="reactive"]'
+			fifties:		'#subtotal_50',
+			reactive:		'#reactive input',
+			deployment:		'#deployment input'
 		}, function(i){
-			return (util.sum(i.fifties) + i.reactive) / 8.0;
+			return (i.fifties + i.reactive + i.deployment) / 8.0;
 		},{
 			taintable: true
 		});
 		
-		/*
-		var total = sum_of_estimates_50;
-		
-		$j('.additionals').each(function(){
-			var val = parseInt( $j(this).val() );
-			
-			total += val;
-		});
-		
-		$j('#scope_total').val(total);
-		*/
+		$j('#scope_total').live_formula('.additionals, #subtotal_50', util.sum);
 	}
 	
 	jQuery(function(){
@@ -102,20 +52,12 @@
 
 		$j('.feature_list').sortable({ handle: '.feature_head .sorthandle', axis: 'y' });
 		
-		/*$j('.input').live('blur',recalculate);*/
 		setupFormulas();
 		
-		/*$j('.taintable').each(function(){
-			$j(this).data('tainted',false);
-		}).focus(function(){
-			if (!$j(this).data('tainted'))
-				$j(this).data('default', $j(this).val());
-		}).blur(function(){
-			if ($j(this).data('tainted') || $j(this).data('default') != $j(this).val()){
-				$j(this).data('tainted', true);
-				recalculate();
-			}
-		});*/
+		//setTimeout(500,function(){
+			$('.estimate_50').first().trigger('blur');
+			$('.estimate_90').first().trigger('blur');
+		//});
 	
 	});
 	
