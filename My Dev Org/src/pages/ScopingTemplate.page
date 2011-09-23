@@ -54,10 +54,8 @@
 		
 		setupFormulas();
 		
-		//setTimeout(500,function(){
-			$('.estimate_50').first().trigger('blur');
-			$('.estimate_90').first().trigger('blur');
-		//});
+		$('.estimate_50').first().trigger('blur');
+		$('.estimate_90').first().trigger('blur');
 	
 	});
 	
