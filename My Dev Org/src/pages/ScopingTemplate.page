@@ -114,7 +114,8 @@
 			});
 			return Math.sqrt( util.sum( sum_of_squares ) );
 		},{
-			taintable: true
+			taintable: true,
+			precision: function(a,b){ return 3; }
 		});
 		
 		$j('[id$="subtotal_50"]').live_formula('.estimate_50', util.sum);
@@ -127,10 +128,11 @@
 		}, function(i){
 			return (i.fifties + i.reactive + i.deployment) / 8.0;
 		},{
-			taintable: true
+			taintable: true,
+			precision: 'highest'
 		});
 		
-		$j('#scope_total').live_formula('.additionals, #subtotal_50', util.sum);
+		$j('#scope_total').live_formula('.additionals, #subtotal_50', util.sum, {precision: 'highest'});
 	}
 	
 	jQuery(function(){
@@ -140,7 +142,8 @@
 		$j('.task_list').sortable({ handle: '.sorthandle',
 									connectWith: '.task_list',
 									axis: 'y',
-									update: function(event, ui) { console.log(event); console.log(ui); }
+									update: function(event, ui) { console.log(event); console.log(ui); },
+									receive: function(event, ui) { console.log(event); console.log(ui); }
 								 });
 
 		$j('.feature_list').sortable({ handle: '.feature_head .sorthandle', axis: 'y' });
