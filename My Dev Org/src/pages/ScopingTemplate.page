@@ -25,7 +25,7 @@
 }
 	
 	#scope {
-		width: 800px;
+		width: 860px;
 	}
 	
 	#scope ul {
@@ -82,28 +82,42 @@
 		margin-left: 200px;
 	}
 	
-	#scope #subtotals, #scope #deployment, #scope #reactive, #scope #code_review,
-	#scope #testing, #scope #project_management, #scope #total {
-		margin-left: 415px;
+	#scope #subtotals, #scope #deployment, #scope #reactive, #scope #buffer,
+	#scope #code_review, #scope #testing, #scope #project_management, #scope #total {
+		margin-left: 475px;
 	}
 	
-	#scope #subtotals .summary_label, #scope #deployment .summary_label,
-	#scope #reactive .summary_label, #scope #code_review .summary_label,
-	#scope #testing .summary_label, #scope #project_management .summary_label,
-	#scope #total .summary_label {
-		width: 200px;
+	#scope .formula {
+		display: inline-block;
+	}
+	
+	#scope .summary_label {
+		width: 140px;
 		text-align: right;
 		display: inline-block;
+	}
+	
+	#scope #subtotal_50, #scope #subtotal_90, #scope #scope_total {
+		color: #000;
+		background-color: #fff;
 	}
 	
 	</style>	
 	<script type="text/javascript">
 	
 	var $j;
-	
+	/*
+	(function($){
+		$.fn.inject = function(initial_val, each_function){
+			$(this).each(function(index){
+				initial_val = each_function(initial_val, index);
+			});
+		};
+	})(jQuery);
+	*/
 	function setupFormulas(){
 	
-		$j('#reactive input').live_formula({
+		$j('#reactive input, #buffer input').live_formula({
 			fifties: '.estimate_50',
 			nineties: '.estimate_90'
 		}, function(i){
@@ -118,15 +132,15 @@
 			precision: function(a,b){ return 3; }
 		});
 		
-		$j('[id$="subtotal_50"]').live_formula('.estimate_50', util.sum);
-		$j('[id$="subtotal_90"]').live_formula('.estimate_90', util.sum);
+		$j('#subtotal_50').live_formula('.estimate_50', util.sum);
+		$j('#subtotal_90').live_formula('.estimate_90', util.sum);
 		
 		$j('[id$="code_review"]').live_formula({
 			fifties:		'#subtotal_50',
 			reactive:		'#reactive input',
 			deployment:		'#deployment input'
 		}, function(i){
-			return (i.fifties + i.reactive + i.deployment) / 8.0;
+			return ((i.fifties?i.fifties:0) + (i.reactive?i.reactive:0) + (i.deployment?i.deployment:0)) / 7.0;
 		},{
 			taintable: true,
 			precision: 'highest'
@@ -142,8 +156,57 @@
 		$j('.task_list').sortable({ handle: '.sorthandle',
 									connectWith: '.task_list',
 									axis: 'y',
-									update: function(event, ui) { console.log(event); console.log(ui); },
-									receive: function(event, ui) { console.log(event); console.log(ui); }
+									update: function(event, ui) {
+										var $task				= $j(ui.item),
+											$feature			= $task.closest('.feature'),
+											old_feature_index	= $task.data('featureIndex'),
+											old_task_index		= $task.data('taskIndex'),
+											new_feature_index	= $feature.data('featureIndex'),
+											new_task_index;
+											
+										if( old_feature_index === new_feature_index ){
+											$feature.find('.task').each(function( list_index ){
+												var	$this = $(this),
+													this_task_index = $this.data('taskIndex');
+												
+												if( old_task_index === this_task_index ){
+													new_task_index = list_index;
+												}
+												
+												$this.data( 'taskIndex', list_index );
+											});
+										}
+										else if( null !== ui.sender ){
+											$feature.find('.task').each(function( list_index ){
+												var	$this = $(this),
+													this_task_index = $this.data( 'taskIndex' );
+												
+												if( old_task_index === this_task_index ){
+													new_task_index = list_index;
+													$this.data( 'featureIndex', new_feature_index );
+												}
+												
+												$this.data( 'taskIndex', list_index );
+											});
+											
+											$feature.siblings().andSelf().each(function(){
+												var $this = $(this);
+												if( old_feature_index === $this.data( 'featureIndex' )){
+													$this.find('.task').each(function( list_index ){
+														$(this).data('taskIndex', list_index );
+													});
+												}
+											});  
+										}
+										
+										if( 'undefined' !== typeof new_task_index ){
+									  		console && console.log && console.log('sort of'+old_feature_index+' ot'+old_task_index+' nf'+new_feature_index+' nt'+new_task_index);
+									  		
+									  		/*moveTask( old_feature_index,
+									  					old_task_index,
+									  					new_feature_index,
+									  					new_task_index );*/
+									}
 								 });
 
 		$j('.feature_list').sortable({ handle: '.feature_head .sorthandle', axis: 'y' });
@@ -156,11 +219,17 @@
 	});
 	
 	</script>
-	<apex:form >
+	<apex:form>
+		<apex:actionFunction name="moveTask">
+			<apex:param name="oldFeatureIndex" />
+			<apex:param name="oldTaskIndex" />
+			<apex:param name="newFeatureIndex" />
+			<apex:param name="newTaskIndex" />
+		</apex:actionFunction>
 		<div id="scope">
 			<div id="scope_name">
-				<apex:outputLabel value="Project Name" for="scopeName"/>
-				<apex:inputText id="scopeName" value="{!scope.Name}"/>
+				<apex:outputLabel value="Project Name" for="scopeName" />
+				<apex:inputText id="scopeName" value="{!scope.Name}" />
 			</div>
 			
 			<div class="headers">
@@ -174,7 +243,7 @@
 			<ul class="feature_list">
 			<apex:repeat id="features" value="{!scope.features}" var="feature">
 				
-				<li class="feature" id="feature_{!feature.index}" data-feature-id="{!feature.index}">
+				<li class="feature" id="feature_{!feature.index}" data-feature-index="{!feature.index}">
 					<div class="feature_head">
 						<apex:inputText value="{!feature.Name}" styleClass="feature_name"/>
 						<div class="sorthandle">M</div>
@@ -183,7 +252,7 @@
 					<ul class="task_list">
 					<apex:repeat id="tasks" value="{!feature.tasks}" var="task">
 					
-						<li class="task" id="task_{!feature.index}_{!task.index}" data-feature-id="{!feature.index}" data-task-id="{!task.index}">
+						<li class="task" id="task_{!feature.index}_{!task.index}" data-feature-index="{!feature.index}" data-task-index="{!task.index}">
 							<div class="task_detail">
 								<apex:inputText value="{!task.Name}" styleClass="task_name"/>
 								<apex:inputText value="{!task.details}" styleClass="task_detail"/>
@@ -222,19 +291,27 @@
 				<input type="text" class="number" id="subtotal_90" disabled="true" />
 			</div>
 			
-			<div id="deployment">
-				<div class="summary_label"><span>Deployment</span></div>
-				<apex:inputText styleClass="number additionals input" value="{!scope.deployment}"/>
+			<div id="buffer">
+				<div class="summary_label"><span>Buffer</span></div>
+				<apex:inputText styleClass="number additionals taintable" id="buffer" value="{!scope.buffer}"/>
+				<div class="formula"><select><option>&#8730;&#8721;(e90 - e50)^2</option></select></div>
 			</div>
 			
 			<div id="reactive">
 				<div class="summary_label"><span>Reactive</span></div>
 				<apex:inputText styleClass="number additionals taintable" id="reactive" value="{!scope.reactive}"/>
+				<div class="formula"><select><option>&#8730;&#8721;(e90 - e50)^2</option></select></div>
+			</div>
+			
+			<div id="deployment">
+				<div class="summary_label"><span>Deployment</span></div>
+				<apex:inputText styleClass="number additionals input" value="{!scope.deployment}"/>
 			</div>
 			
 			<div id="code_review">
 				<div class="summary_label"><span>Code Review</span></div>
 				<apex:inputText styleClass="number additionals taintable" id="code_review" value="{!scope.codeReview}"/>
+				<div class="formula"><select><option>(b + r + d + &#8721;e50)/7</option></select></div>
 			</div>
 			
 			<div id="testing">
