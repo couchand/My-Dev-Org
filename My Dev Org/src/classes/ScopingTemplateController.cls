@@ -7,9 +7,15 @@ global with sharing class ScopingTemplateController {
 				
 				Id scopeId = ApexPages.currentPage().getParameters().get('id');
 				if (null != scopeId)
+				{
 					scope = loadScope(scopeId);
+				}
 				else
+				{
 					scope = new ScopeModel();
+					ScopingFeatureModel feature = scope.addFeature();
+					feature.addTask();
+				}
 					
 			}	
 			return scope;
@@ -32,7 +38,7 @@ global with sharing class ScopingTemplateController {
 		ScopeModel scope = new ScopeModel();
 		
 		Scope__c scopeRecord = [SELECT Id, Name,
-									   Code_Review__c, Deployment__c, Project_Management__c,
+									   Code_Review__c, Deployment__c, Project_Management__c, Buffer__c,
 									   Reactive__c, Testing__c, Sum_of_X50_Estimates__c, Total__c
 								FROM Scope__c
 								WHERE Id = :scopeId];

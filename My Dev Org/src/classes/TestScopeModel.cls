@@ -1,6 +1,7 @@
 @isTest
 private class TestScopeModel
 {
+	// @TODO: extend tests
 	static testMethod void testGetRecord()
 	{
 		final String TEST_NAME = 'Test Scope';
