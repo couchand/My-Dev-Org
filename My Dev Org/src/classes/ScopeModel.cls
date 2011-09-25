@@ -4,6 +4,7 @@ global with sharing class ScopeModel {
 	public Decimal codeReview { get; set; }
 	public Decimal deployment { get; set; }
 	public Decimal projectManagement { get; set; }
+	public Decimal buffer { get; set; }
 	public Decimal reactive { get; set; }
 	public Decimal testing { get; set; }
 	
@@ -30,9 +31,11 @@ global with sharing class ScopeModel {
 		}
 	}
 	
-	public void addFeature()
+	public ScopingFeatureModel addFeature()
 	{
-		featureList.add(new ScopingFeatureModel());
+		ScopingFeatureModel feature = new ScopingFeatureModel();
+		featureList.add(feature);
+		return feature;
 	}
 	
 	public ScopingFeatureModel addFeature(Scoping_Feature__c featureRecord)
@@ -46,6 +49,11 @@ global with sharing class ScopeModel {
 		return feature;
 	}
 	
+	public void moveFeature( Integer fromIndex, Integer toIndex )
+	{
+		featureList.move( fromIndex, toIndex );
+	}
+	
 	public Scope__c getRecord()
 	{
 		Scope__c record = new Scope__c( Id = id );
@@ -54,6 +62,7 @@ global with sharing class ScopeModel {
 		record.Code_Review__c			= codeReview;
 		record.Deployment__c			= deployment;
 		record.Project_Management__c	= projectManagement;
+		record.Buffer__c				= buffer;
 		record.Reactive__c				= reactive;
 		record.Testing__c				= testing;
 		
@@ -67,6 +76,7 @@ global with sharing class ScopeModel {
 		codeReview			= record.Code_Review__c;
 		deployment			= record.Deployment__c;
 		projectManagement	= record.Project_Management__c;
+		buffer				= record.Buffer__c;
 		reactive			= record.Reactive__c;
 		testing				= record.Testing__c;
 		

@@ -1,4 +1,9 @@
 global with sharing class ScopingTemplateController {
+	public static String OLD_FEATURE_TAG	{ get { return 'X_ofi'; } }
+	public static String OLD_TASK_TAG		{ get { return 'X_oti'; } }
+	public static String NEW_FEATURE_TAG	{ get { return 'X_nfi'; } }
+	public static String NEW_TASK_TAG		{ get { return 'X_nti'; } }
+	
 	public ScopeModel scope
 	{
 		get
@@ -31,6 +36,47 @@ global with sharing class ScopingTemplateController {
 	public void addTask()
 	{
 		scope.features[0].addTask();
+	}
+	
+	public void moveTask()
+	{
+		try{
+			Map<String, String> params = ApexPages.currentPage().getParameters();
+		
+			Integer oldFeatureIndex	= Integer.valueOf( params.get( OLD_FEATURE_TAG ) ),
+					oldTaskIndex	= Integer.valueOf( params.get( OLD_TASK_TAG ) ),
+					newFeatureIndex	= Integer.valueOf( params.get( NEW_FEATURE_TAG ) ),
+					newTaskIndex	= Integer.valueOf( params.get( NEW_TASK_TAG ) );
+			
+			/*
+			ApexPages.addMessage( new ApexPages.Message( ApexPages.Severity.INFO, 'Moving tasks from [' + oldFeatureIndex + ', ' + oldTaskIndex + ']' ) );
+			ApexPages.addMessage( new ApexPages.Message( ApexPages.Severity.INFO, 'Moving tasks to [' + newFeatureIndex + ', ' + newTaskIndex + ']' ) );
+			*/
+			
+			if( oldFeatureIndex == newFeatureIndex )
+			{
+				scope.features[oldFeatureIndex].moveTask( oldTaskIndex, newTaskIndex );
+			}
+			else
+			{
+				ScopingTaskModel task = scope.features[oldFeatureIndex].removeTask( oldTaskIndex );
+				scope.features[newFeatureIndex].putTask( newTaskIndex, task );
+			}
+		}
+		catch( Exception e )
+		{
+			ApexPages.addMessage( new ApexPages.Message( ApexPages.Severity.FATAL, e.getMessage() ) );
+		}
+	}
+	
+	public void moveFeature()
+	{
+		Map<String, String> params = ApexPages.currentPage().getParameters();
+	
+		Integer oldFeatureIndex	= Integer.valueOf( params.get( OLD_FEATURE_TAG ) ),
+				newFeatureIndex	= Integer.valueOf( params.get( NEW_FEATURE_TAG ) );
+		
+		scope.moveFeature( oldFeatureIndex, newFeatureIndex );
 	}
 	
 	public ScopeModel loadScope( Id scopeId )

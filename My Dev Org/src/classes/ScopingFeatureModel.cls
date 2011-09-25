@@ -29,6 +29,21 @@ public with sharing class ScopingFeatureModel extends ListModel.Element {
 		taskList.add(new ScopingTaskModel());
 	}
 	
+	public ScopingTaskModel removeTask( Integer index )
+	{
+		return (ScopingTaskModel)taskList.remove( index );
+	}
+	
+	public void putTask( Integer index, ScopingTaskModel task )
+	{
+		taskList.put( index, task );
+	}
+	
+	public void moveTask( Integer fromIndex, Integer toIndex )
+	{
+		taskList.move( fromIndex, toIndex );
+	}
+	
 	public ScopingTaskModel addTask(Scoping_Task__c taskRecord)
 	{
 		ScopingTaskModel task = new ScopingTaskModel();

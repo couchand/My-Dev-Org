@@ -3,7 +3,6 @@
 	<apex:includeScript value="http://code.jquery.com/ui/jquery-ui-git.js"/>
 	<apex:includeScript value="{!URLFOR($Resource.jQueryFormula, '/src/jquery.form-u-la.js')}"/>
 	<style type="text/css">
-	
 /*---RESET---*/ 
 #scope /*html*/, #scope body, #scope div, #scope span, #scope applet, #scope object, #scope iframe,
 #scope h1, #scope h2, #scope h3, #scope h4, #scope h5, #scope h6, #scope p, #scope blockquote, #scope pre,
@@ -12,267 +11,293 @@
 #scope strike, #scope strong, #scope sub, #scope sup, #scope tt, #scope var, #scope dl, #scope dt, #scope dd,
 #scope ol, #scope ul, #scope li, #scope fieldset, #scope form, #scope label, #scope legend,
 #scope table, #scope caption, #scope tbody, #scope tfoot, #scope thead, #scope tr, #scope th, #scope td {    
-   margin: 0;
-   padding: 0;
-   border: 0;
-   /*border: thin solid black;*/
-   outline: 0;
-   font-weight: inherit;
-   font-style: inherit;
-   font-size: 100%;
-   font-family: inherit;
-   vertical-align: baseline;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	/*border: thin solid black;*/
+	outline: 0;
+	font-weight: inherit;
+	font-style: inherit;
+	font-size: 100%;
+	font-family: inherit;
+	vertical-align: baseline;
 }
-	
-	#scope {
-		width: 860px;
-	}
-	
-	#scope ul {
-		list-style-type: none;
-	}
-	
-	#scope .feature_name, #scope .task_name, #scope .task_details {
-		width: 200px;
-	}
-	
-	#scope .number {
-		width: 75px;
-	}
-	
-	#scope .headers div, #scope .footers div {
-		display: inline-block;
-	}
-	
-	#scope .feature_head, #scope .task_detail,
-	#scope .feature_list, #scope .task_list {
-		position: relative;
-	}
-	
-	#scope .feature_list, #scope .task_list {
-		margin: 6px 0;
-		padding: 9px 0;
-	}
-	
-	#scope .feature_list/*, #scope .task_list*/ {
-		border-top: 1px solid black;
-		border-bottom: 1px solid black;
-	}
-	
-	#scope .feature/*, #scope .task*/ {
-		border-top: 1px solid black;
-		padding: 6px 0 6px 15px;
-	}
-	
-	#scope .feature:first-child/*, #scope .task:first-child*/ {
-		border-style: none;
-	}
-	
-	#scope .sorthandle {
-		position: absolute;
-		top: 0px;
-		left: -15px;
-	}
-	
-	/*#scope .feature_list,*/ #scope .headers .feature_name, #scope .footers .feature_name, #scope #new_feature {
-		margin-left: 15px;
-	}
-	
-	#scope .task_list, #scope .new_task {
-		margin-left: 200px;
-	}
-	
-	#scope #subtotals, #scope #deployment, #scope #reactive, #scope #buffer,
-	#scope #code_review, #scope #testing, #scope #project_management, #scope #total {
-		margin-left: 475px;
-	}
-	
-	#scope .formula {
-		display: inline-block;
-	}
-	
-	#scope .summary_label {
-		width: 140px;
-		text-align: right;
-		display: inline-block;
-	}
-	
-	#scope #subtotal_50, #scope #subtotal_90, #scope #scope_total {
-		color: #000;
-		background-color: #fff;
-	}
-	
-	</style>	
-	<script type="text/javascript">
-	
-	var $j;
-	/*
-	(function($){
-		$.fn.inject = function(initial_val, each_function){
-			$(this).each(function(index){
-				initial_val = each_function(initial_val, index);
-			});
-		};
-	})(jQuery);
-	*/
-	function setupFormulas(){
-	
-		$j('#reactive input, #buffer input').live_formula({
-			fifties: '.estimate_50',
-			nineties: '.estimate_90'
-		}, function(i){
-			var sum_of_squares = 0;
-			$j.each( i.fifties, function(index, val){
-				var diff = i.nineties[index] - val;
-				sum_of_squares += diff * diff;
-			});
-			return Math.sqrt( util.sum( sum_of_squares ) );
-		},{
-			taintable: true,
-			precision: function(a,b){ return 3; }
-		});
-		
-		$j('#subtotal_50').live_formula('.estimate_50', util.sum);
-		$j('#subtotal_90').live_formula('.estimate_90', util.sum);
-		
-		$j('[id$="code_review"]').live_formula({
-			fifties:		'#subtotal_50',
-			reactive:		'#reactive input',
-			deployment:		'#deployment input'
-		}, function(i){
-			return ((i.fifties?i.fifties:0) + (i.reactive?i.reactive:0) + (i.deployment?i.deployment:0)) / 7.0;
-		},{
-			taintable: true,
-			precision: 'highest'
-		});
-		
-		$j('#scope_total').live_formula('.additionals, #subtotal_50', util.sum, {precision: 'highest'});
-	}
-	
-	jQuery(function(){
-		
-		$j = jQuery;//.noConflict();
-		
-		$j('.task_list').sortable({ handle: '.sorthandle',
-									connectWith: '.task_list',
-									axis: 'y',
-									update: function(event, ui) {
-										var $task				= $j(ui.item),
-											$feature			= $task.closest('.feature'),
-											old_feature_index	= $task.data('featureIndex'),
-											old_task_index		= $task.data('taskIndex'),
-											new_feature_index	= $feature.data('featureIndex'),
-											new_task_index;
-											
-										if( old_feature_index === new_feature_index ){
-											$feature.find('.task').each(function( list_index ){
-												var	$this = $(this),
-													this_task_index = $this.data('taskIndex');
-												
-												if( old_task_index === this_task_index ){
-													new_task_index = list_index;
-												}
-												
-												$this.data( 'taskIndex', list_index );
-											});
-										}
-										else if( null !== ui.sender ){
-											$feature.find('.task').each(function( list_index ){
-												var	$this = $(this),
-													this_task_index = $this.data( 'taskIndex' );
-												
-												if( old_task_index === this_task_index ){
-													new_task_index = list_index;
-													$this.data( 'featureIndex', new_feature_index );
-												}
-												
-												$this.data( 'taskIndex', list_index );
-											});
-											
-											$feature.siblings().andSelf().each(function(){
-												var $this = $(this);
-												if( old_feature_index === $this.data( 'featureIndex' )){
-													$this.find('.task').each(function( list_index ){
-														$(this).data('taskIndex', list_index );
-													});
-												}
-											});  
-										}
-										
-										if( 'undefined' !== typeof new_task_index ){
-									  		console && console.log && console.log('sort of'+old_feature_index+' ot'+old_task_index+' nf'+new_feature_index+' nt'+new_task_index);
-									  		
-									  		/*moveTask( old_feature_index,
-									  					old_task_index,
-									  					new_feature_index,
-									  					new_task_index );*/
-									}
-								 });
+    
+#scope {
+	width: 860px;
+}
 
-		$j('.feature_list').sortable({ handle: '.feature_head .sorthandle', axis: 'y' });
-		
-		setupFormulas();
-		
-		$('.estimate_50').first().trigger('blur');
-		$('.estimate_90').first().trigger('blur');
-	
+#scope ul {
+	list-style-type: none;
+}
+
+#scope .feature_name, #scope .task_name, #scope .task_details {
+	width: 200px;
+}
+
+#scope .number {
+	width: 75px;
+}
+
+#scope .headers div, #scope .footers div {
+	display: inline-block;
+}
+
+#scope .feature_head, #scope .task_detail,
+#scope .feature_list, #scope .task_list {
+	position: relative;
+}
+
+#scope .feature_list, #scope .task_list {
+	margin: 6px 0;
+	padding: 9px 0;
+}
+
+#scope .feature_list/*, #scope .task_list*/ {
+	border-top: 1px solid black;
+	border-bottom: 1px solid black;
+}
+
+#scope .feature/*, #scope .task*/ {
+	border-top: 1px solid black;
+	padding: 6px 0 6px 15px;
+}
+
+#scope .feature:first-child/*, #scope .task:first-child*/ {
+	border-style: none;
+}
+
+#scope .sorthandle {
+	position: absolute;
+	top: 0px;
+	left: -15px;
+}
+
+/*#scope .feature_list,*/ #scope .headers .feature_name, #scope .footers .feature_name, #scope #new_feature {
+	margin-left: 15px;
+}
+
+#scope .task_list, #scope .new_task {
+	margin-left: 200px;
+}
+
+#scope #subtotals, #scope #deployment, #scope #reactive, #scope #buffer,
+#scope #code_review, #scope #testing, #scope #project_management, #scope #total {
+	margin-left: 475px;
+}
+
+#scope .formula {
+	display: inline-block;
+}
+
+#scope .summary_label {
+	width: 140px;
+	text-align: right;
+	display: inline-block;
+}
+
+#scope #subtotal_50, #scope #subtotal_90, #scope #scope_total {
+	color: #000;
+	background-color: #fff;
+}
+	</style>
+	<script type="text/javascript">
+var $j;
+
+/*
+(function($){
+$.fn.inject = function(initial_val, each_function){
+$(this).each(function(index){
+initial_val = each_function(initial_val, index);
+});
+};
+})(jQuery);
+*/
+
+function setupFormulas(){
+
+	$j('#reactive input, #buffer input').live_formula({
+		fifties: '.estimate_50',
+		nineties: '.estimate_90'
+	}, function(i){
+		var sum_of_squares = 0;
+		$j.each( i.fifties, function(index, val){
+			var diff = i.nineties[index] - val;
+			sum_of_squares += diff * diff;
+		});
+		return Math.sqrt( util.sum( sum_of_squares ) );
+	},{
+		taintable: true,
+		precision: function(a,b){ return 3; }
 	});
 	
+	$j('#subtotal_50').live_formula('.estimate_50', util.sum);
+	$j('#subtotal_90').live_formula('.estimate_90', util.sum);
+	
+	$j('[id$="code_review"]').live_formula({
+		fifties:        '#subtotal_50',
+		reactive:       '#reactive input',
+		deployment:     '#deployment input'
+	}, function(i){
+		return ((i.fifties?i.fifties:0) + (i.reactive?i.reactive:0) + (i.deployment?i.deployment:0)) / 7.0;
+	},{
+		taintable: true,
+		precision: 'highest'
+	});
+
+	$j('#scope_total').live_formula('.additionals, #subtotal_50', util.sum, {precision: 'highest'});
+}
+
+function setupSorting(){
+	$j('.task_list').sortable({
+		handle: '.sorthandle',
+		connectWith: '.task_list',
+		axis: 'y',
+		update: function(event, ui) {
+			var $task				= $j(ui.item),
+				$feature			= $task.closest('.feature'),
+				old_feature_index	= $task.data('featureIndex'),
+				old_task_index		= $task.data('taskIndex'),
+				new_feature_index	= $feature.data('featureIndex'),
+				new_task_index;
+			
+			if( old_feature_index === new_feature_index ){
+				$feature.find('.task').each(function( list_index ){
+					var $this = $(this),
+					this_task_index = $this.data('taskIndex');
+					
+					if( old_task_index === this_task_index ){
+						new_task_index = list_index;
+					}
+					
+					$this.data( 'taskIndex', list_index );
+				});
+			}
+			else if( null !== ui.sender ){
+				$feature.find('.task').each(function( list_index ){
+					var $this = $(this),
+					this_task_index = $this.data( 'taskIndex' );
+					
+					if( old_task_index === this_task_index ){
+						new_task_index = list_index;
+						$this.data( 'featureIndex', new_feature_index );
+					}
+					
+					$this.data( 'taskIndex', list_index );
+				});
+				
+				$feature.siblings().andSelf().each(function(){
+					var $this = $(this);
+					if( old_feature_index === $this.data( 'featureIndex' )){
+						$this.find('.task').each(function( list_index ){
+							$(this).data('taskIndex', list_index );
+						});
+					}
+				});
+			}
+			
+			if( 'undefined' !== typeof new_task_index ){
+				console && console.log && console.log('moving from [' + old_feature_index + ', ' + old_task_index + '] to [' + new_feature_index + ', ' + new_task_index + '].' );
+				moveTask( 	''+old_feature_index,
+							''+old_task_index,
+							''+new_feature_index,
+							''+new_task_index );
+			}
+		}
+	});
+	
+	$j('.feature_list').sortable({
+		handle: '.feature_head .sorthandle',
+		axis: 'y',
+		update: function(event, ui) {
+			var $feature			= $j(ui.item),
+				old_feature_index	= $feature.data('featureIndex'),
+				new_feature_index;
+			
+			$feature.siblings().andSelf().each(function( list_index ){
+				var $this = $(this),
+				this_feature_index = $this.data('featureIndex');
+				
+				if( old_feature_index === this_feature_index ){
+					new_feature_index = list_index;
+				}
+				
+				$this.data( 'featureIndex', list_index );
+			});
+			
+			if( 'undefined' !== typeof new_feature_index ){
+				console && console.log && console.log('moving from [' + old_feature_index + '] to [' + new_feature_index + '].' );
+				moveFeature(	''+old_feature_index,
+								''+new_feature_index );
+			}
+		}
+	});
+}
+	
+jQuery(function(){
+	
+	$j = jQuery;//.noConflict();
+
+	setupSorting();	
+	setupFormulas();
+	
+	$('.estimate_50').first().trigger('blur');
+	$('.estimate_90').first().trigger('blur');
+
+});
 	</script>
-	<apex:form>
-		<apex:actionFunction name="moveTask">
-			<apex:param name="oldFeatureIndex" />
-			<apex:param name="oldTaskIndex" />
-			<apex:param name="newFeatureIndex" />
-			<apex:param name="newTaskIndex" />
+	<apex:form >
+		<apex:actionFunction name="moveTask" action="{!moveTask}" rerender="messages, featurePanel" onComplete="setupSorting();">
+			<apex:param name="{!OLD_FEATURE_TAG}" value="" />
+			<apex:param name="{!OLD_TASK_TAG}" value="" />
+			<apex:param name="{!NEW_FEATURE_TAG}" value="" />
+			<apex:param name="{!NEW_TASK_TAG}" value="" />
 		</apex:actionFunction>
+		<apex:actionFunction name="moveFeature" action="{!moveFeature}" rerender="messages, featurePanel" onComplete="setupSorting();">
+			<apex:param name="{!OLD_FEATURE_TAG}" value="" />
+			<apex:param name="{!NEW_FEATURE_TAG}" value="" />
+		</apex:actionFunction>
+		<apex:pageMessages id="messages"/>
 		<div id="scope">
 			<div id="scope_name">
-				<apex:outputLabel value="Project Name" for="scopeName" />
-				<apex:inputText id="scopeName" value="{!scope.Name}" />
+			    <apex:outputLabel value="Project Name" for="scopeName" />
+			    <apex:inputText id="scopeName" value="{!scope.Name}" />
 			</div>
-			
 			<div class="headers">
-				<div class="feature_name">Feature</div>
-				<div class="task_name">Tasks</div>
-				<div class="task_details">Details</div>
-				<div class="number">Estimate 50%</div>
-				<div class="number">Estimate 90%</div>
+			    <div class="feature_name">Feature</div>
+			    <div class="task_name">Tasks</div>
+			    <div class="task_details">Details</div>
+			    <div class="number">Estimate 50%</div>
+			    <div class="number">Estimate 90%</div>
 			</div>
-			
-			<ul class="feature_list">
-			<apex:repeat id="features" value="{!scope.features}" var="feature">
-				
-				<li class="feature" id="feature_{!feature.index}" data-feature-index="{!feature.index}">
-					<div class="feature_head">
-						<apex:inputText value="{!feature.Name}" styleClass="feature_name"/>
-						<div class="sorthandle">M</div>
-					</div>
-					
-					<ul class="task_list">
-					<apex:repeat id="tasks" value="{!feature.tasks}" var="task">
-					
-						<li class="task" id="task_{!feature.index}_{!task.index}" data-feature-index="{!feature.index}" data-task-index="{!task.index}">
-							<div class="task_detail">
-								<apex:inputText value="{!task.Name}" styleClass="task_name"/>
-								<apex:inputText value="{!task.details}" styleClass="task_detail"/>
-								<apex:inputText value="{!task.estimate50}" styleClass="estimate_50 number input"/>
-								<apex:inputText value="{!task.estimate90}" styleClass="estimate_90 number input"/>
+			<apex:outputPanel id="featurePanel">
+				<ul class="feature_list">
+					<apex:repeat id="features" value="{!scope.features}" var="feature">
+						<li class="feature" id="feature_{!feature.index}" data-feature-index="{!feature.index}">
+							<div class="feature_head">
+								<apex:inputText value="{!feature.Name}" styleClass="feature_name"/>
 								<div class="sorthandle">M</div>
 							</div>
+							<ul class="task_list">
+								<apex:repeat id="tasks" value="{!feature.tasks}" var="task">
+									<li class="task" id="task_{!feature.index}_{!task.index}" data-feature-index="{!feature.index}" data-task-index="{!task.index}">
+										<div class="task_detail">
+											<apex:inputText value="{!task.name}" styleClass="task_name"/>
+											<apex:inputText value="{!task.details}" styleClass="task_detail"/>
+											<apex:inputText value="{!task.estimate50}" styleClass="estimate_50 number input"/>
+											<apex:inputText value="{!task.estimate90}" styleClass="estimate_90 number input"/>
+											<div class="sorthandle">M</div>
+										</div>
+									</li>
+								</apex:repeat>
+							</ul>
+							<div class="feature_tail new_task">
+							    <apex:commandButton action="{!addTask}" value="AddTask" rerender="messages, featurePanel" onComplete="setupSorting();" />
+							</div>
 						</li>
-					
 					</apex:repeat>
-					</ul>
-					
-					<div class="feature_tail new_task">
-						<apex:commandButton action="{!addTask}" value="AddTask" />
-					</div>
-				</li>
-			
-			</apex:repeat>
-			</ul>
-			
+				</ul>
+			</apex:outputPanel>
 			<div class="footers">
 				<div class="feature_name">Feature</div>
 				<div class="task_name">Tasks</div>
@@ -280,57 +305,47 @@
 				<div class="number">Estimate 50%</div>
 				<div class="number">Estimate 90%</div>
 			</div>
-			
 			<div id="new_feature">
-				<apex:commandButton action="{!addFeature}" value="Add Feature"/>
+				<apex:commandButton action="{!addFeature}" value="Add Feature" rerender="messages, featurePanel" onComplete="setupSorting();" />
 			</div>
-			
 			<div id="subtotals">
 				<div class="summary_label"><span>Subtotal</span></div>
 				<input type="text" class="number" id="subtotal_50" disabled="true" value="{!scope.estimate50}" />
 				<input type="text" class="number" id="subtotal_90" disabled="true" />
 			</div>
-			
 			<div id="buffer">
 				<div class="summary_label"><span>Buffer</span></div>
-				<apex:inputText styleClass="number additionals taintable" id="buffer" value="{!scope.buffer}"/>
+				<apex:inputText styleClass="number additionals taintable" id="buffer" value="{!scope.buffer}" />
 				<div class="formula"><select><option>&#8730;&#8721;(e90 - e50)^2</option></select></div>
 			</div>
-			
 			<div id="reactive">
 				<div class="summary_label"><span>Reactive</span></div>
-				<apex:inputText styleClass="number additionals taintable" id="reactive" value="{!scope.reactive}"/>
+				<apex:inputText styleClass="number additionals taintable" id="reactive" value="{!scope.reactive}" />
 				<div class="formula"><select><option>&#8730;&#8721;(e90 - e50)^2</option></select></div>
 			</div>
-			
 			<div id="deployment">
 				<div class="summary_label"><span>Deployment</span></div>
 				<apex:inputText styleClass="number additionals input" value="{!scope.deployment}"/>
 			</div>
-			
 			<div id="code_review">
 				<div class="summary_label"><span>Code Review</span></div>
-				<apex:inputText styleClass="number additionals taintable" id="code_review" value="{!scope.codeReview}"/>
+				<apex:inputText styleClass="number additionals taintable" id="code_review" value="{!scope.codeReview}" />
 				<div class="formula"><select><option>(b + r + d + &#8721;e50)/7</option></select></div>
 			</div>
-			
 			<div id="testing">
 				<div class="summary_label"><span>Testing</span></div>
-				<apex:inputText styleClass="number additionals input" value="{!scope.testing}"/>
+				<apex:inputText styleClass="number additionals input" value="{!scope.testing}" />
 			</div>
-			
 			<div id="project_management">
 				<div class="summary_label"><span>Project Management</span></div>
-				<apex:inputText styleClass="number additionals input" value="{!scope.projectManagement}"/>
+				<apex:inputText styleClass="number additionals input" value="{!scope.projectManagement}" />
 			</div>
-			
 			<div id="total">
 				<div class="summary_label"><span>Total</span></div>
-				<input type="text" class="number" id="scope_total" disabled="true" value="{!scope.total}"/>
+				<input type="text" class="number" id="scope_total" disabled="true" value="{!scope.total}" />
 			</div>
-			
 			<div id="save_scope">
-				<apex:commandButton action="{!saveScope}" value="Save Scope"/>
+				<apex:commandButton action="{!saveScope}" value="Save Scope" />
 			</div>
 		</div>
 	</apex:form>
