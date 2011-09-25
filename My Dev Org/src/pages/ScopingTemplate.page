@@ -292,7 +292,9 @@ jQuery(function(){
 								</apex:repeat>
 							</ul>
 							<div class="feature_tail new_task">
-							    <apex:commandButton action="{!addTask}" value="AddTask" rerender="messages, featurePanel" onComplete="setupSorting();" />
+							    <apex:commandButton action="{!addTask}" value="AddTask" rerender="messages, featurePanel" onComplete="setupSorting();">
+							    	<apex:param name="{!NEW_FEATURE_TAG}" value="{!feature.index}" />
+							    </apex:commandButton>
 							</div>
 						</li>
 					</apex:repeat>
@@ -311,7 +313,7 @@ jQuery(function(){
 			<div id="subtotals">
 				<div class="summary_label"><span>Subtotal</span></div>
 				<input type="text" class="number" id="subtotal_50" disabled="true" value="{!scope.estimate50}" />
-				<input type="text" class="number" id="subtotal_90" disabled="true" />
+				<input type="hidden" class="number" id="subtotal_90" disabled="true" />
 			</div>
 			<div id="buffer">
 				<div class="summary_label"><span>Buffer</span></div>

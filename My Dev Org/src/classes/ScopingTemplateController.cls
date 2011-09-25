@@ -35,7 +35,8 @@ global with sharing class ScopingTemplateController {
 	
 	public void addTask()
 	{
-		scope.features[0].addTask();
+		Integer featureIndex = Integer.valueOf( ApexPages.currentPage().getParameters().get( NEW_FEATURE_TAG ) );
+		scope.features[featureIndex].addTask();
 	}
 	
 	public void moveTask()

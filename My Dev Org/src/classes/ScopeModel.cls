@@ -8,8 +8,8 @@ global with sharing class ScopeModel {
 	public Decimal reactive { get; set; }
 	public Decimal testing { get; set; }
 	
-	public Decimal total { get; private set; }
 	public Decimal estimate50 { get; private set; }
+	public Decimal total { get; private set; }
 	
 	private ListModel featureList;
 	
@@ -54,6 +54,21 @@ global with sharing class ScopeModel {
 		featureList.move( fromIndex, toIndex );
 	}
 	
+	private Decimal sumEstimates()
+	{
+		Decimal sum = 0;
+		
+		for( ScopingFeatureModel feature : features )
+		{
+			for( ScopingTaskModel task : feature.tasks )
+			{
+				sum += task.estimate50;
+			}
+		}
+		
+		return sum;
+	}
+	
 	public Scope__c getRecord()
 	{
 		Scope__c record = new Scope__c( Id = id );
@@ -65,6 +80,7 @@ global with sharing class ScopeModel {
 		record.Buffer__c				= buffer;
 		record.Reactive__c				= reactive;
 		record.Testing__c				= testing;
+		record.Sum_of_X50_Estimates__c	= sumEstimates();
 		
 		return record;
 	}
