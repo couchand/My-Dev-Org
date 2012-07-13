@@ -1,0 +1,45 @@
+<apex:page showHeader="false" sidebar="false">
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"></script>
+	<script type="text/javascript" src="https://raw.github.com/couchand/jQueryUI.Drawer/tests/src/jqueryui.drawer.js"></script>
+	<link type="text/css" rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/themes/smoothness/jquery-ui.css"></link>
+	<script type="text/javascript">
+		$(function(){
+		
+$('#ul_drawer').drawer();
+
+		});
+			
+	</script>
+	<style>
+.ui-drawer {
+
+	position:	fixed;
+	top:		5px;
+	left:		-1px;
+	z-index:	9999;
+
+}
+
+.ui-drawer .ui-drawer-handle {
+
+	position:	absolute;
+	top:		0;
+	right:		-18px;
+
+}
+
+.ui-drawer .ui-drawer-content {
+
+	padding:	5px 25px 5px 5px;
+
+}
+	</style>
+	<div id="ul_drawer">
+		<ul>
+			<li><a href="#">Foo</a></li>
+			<li><a href="#">Bar</a></li>
+			<li><a href="#">Baz</a></li>
+		</ul>
+	</div>
+</apex:page>

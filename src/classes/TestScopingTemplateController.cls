@@ -12,7 +12,7 @@ private class TestScopingTemplateController
 		
 		ScopeModel model = controller.scope;
 		
-		System.assertEquals( 1, model.features.size(), 'The Scope model should have one feature.' );
+		System.assertEquals( 2, model.features.size(), 'The Scope model should have two features, one default and one added.' );
 	}
 	
 	static testMethod void testSaveScope()
@@ -26,10 +26,10 @@ private class TestScopingTemplateController
 		
 		controller.scope.Name = TEST_PROJECT_NAME;
 			
-		controller.addFeature();
+		//controller.addFeature();
 		controller.scope.features[0].name = TEST_FEATURE_NAME;
 		
-		controller.scope.features[0].addTask();
+		//controller.scope.features[0].addTask();
 		controller.scope.features[0].tasks[0].name = TEST_TASK_NAME;
 		controller.scope.features[0].tasks[0].estimate50 = 1;
 		
@@ -47,7 +47,7 @@ private class TestScopingTemplateController
 		List<Scoping_Task__c> taskRecords = [SELECT Name, Scoping_Feature__c FROM Scoping_Task__c WHERE Scoping_Feature__c = :record.Scoping_Features__r[0].Id];
 		
 		System.assertEquals( 1, taskRecords.size(), 'The Scope model should have one task.' );
-		System.assertEquals( record.Id, taskRecords[0].Scoping_Feature__c, 'The Task\'s Feature ID should be populated.' );
-		System.assertEquals( TEST_FEATURE_NAME, taskRecords[0].Name, 'The Task Name should be populated.' );
+		System.assertEquals( record.Scoping_Features__r[0].Id, taskRecords[0].Scoping_Feature__c, 'The Task\'s Feature ID should be populated.' );
+		System.assertEquals( TEST_TASK_NAME, taskRecords[0].Name, 'The Task Name should be populated.' );
 	}
 }

@@ -22,7 +22,11 @@
     </types>
     <types>
         <members>*</members>
+        <name>FieldSet</name>
+    </types>
+    <types>
+        <members>*</members>
         <name>StaticResource</name>
     </types>
-    <version>20.0</version>
+    <version>24.0</version>
 </Package>

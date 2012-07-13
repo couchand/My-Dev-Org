@@ -1,7 +1,7 @@
-<apex:page standardStylesheets="false" showHeader="false" sidebar="false" standardController="Product__c" recordSetVar="products" >
+<apex:page standardStylesheets="false" showHeader="false" sidebar="false" standardController="Product__c" recordSetVar="products" extensions="CatalogController" >
 <apex:stylesheet value="{!URLFOR($Resource.stylesheet, 'styles.css')}" />
 <h1>Product Catalog</h1>
-    <apex:dataTable value="{!products}" var="pitem" rowClasses="odd,even" >
+    <apex:dataTable value="{!products}" var="pitem" rowClasses="odd,even" rendered="{!isUser}">
         <apex:column headerValue="Product">
             <apex:outputText value="{!pitem.name}" />
         </apex:column>

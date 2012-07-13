@@ -31,8 +31,20 @@
 	list-style-type: none;
 }
 
-#scope .feature_name, #scope .task_name, #scope .task_details {
+#scope .feature_name {
+	width: 100px;
+}
+
+#scope .feature .feature_name {
+	width: 500px;
+}
+
+#scope .task_name {
 	width: 200px;
+}
+
+#scope .task_details {
+	width: 300px;
 }
 
 #scope .number {
@@ -69,8 +81,13 @@
 
 #scope .sorthandle {
 	position: absolute;
-	top: 0px;
+	top: 6px;
 	left: -15px;
+}
+
+#scope .sorthandle img {
+	width: 11px;
+	height: 11px;
 }
 
 /*#scope .feature_list,*/ #scope .headers .feature_name, #scope .footers .feature_name, #scope #new_feature {
@@ -78,7 +95,7 @@
 }
 
 #scope .task_list, #scope .new_task {
-	margin-left: 200px;
+	margin-left: 100px;
 }
 
 #scope #subtotals, #scope #deployment, #scope #reactive, #scope #buffer,
@@ -265,7 +282,7 @@ jQuery(function(){
 			</div>
 			<div class="headers">
 			    <div class="feature_name">Feature</div>
-			    <div class="task_name">Tasks</div>
+			    <div class="task_name">Task</div>
 			    <div class="task_details">Details</div>
 			    <div class="number">Estimate 50%</div>
 			    <div class="number">Estimate 90%</div>
@@ -275,18 +292,19 @@ jQuery(function(){
 					<apex:repeat id="features" value="{!scope.features}" var="feature">
 						<li class="feature" id="feature_{!feature.index}" data-feature-index="{!feature.index}">
 							<div class="feature_head">
+								I want to...
 								<apex:inputText value="{!feature.Name}" styleClass="feature_name"/>
-								<div class="sorthandle">M</div>
+								<div class="sorthandle"><apex:image value="{!$Resource.UpDownPng}" /></div>
 							</div>
 							<ul class="task_list">
 								<apex:repeat id="tasks" value="{!feature.tasks}" var="task">
 									<li class="task" id="task_{!feature.index}_{!task.index}" data-feature-index="{!feature.index}" data-task-index="{!task.index}">
 										<div class="task_detail">
 											<apex:inputText value="{!task.name}" styleClass="task_name"/>
-											<apex:inputText value="{!task.details}" styleClass="task_detail"/>
+											<apex:inputText value="{!task.details}" styleClass="task_details"/>
 											<apex:inputText value="{!task.estimate50}" styleClass="estimate_50 number input"/>
 											<apex:inputText value="{!task.estimate90}" styleClass="estimate_90 number input"/>
-											<div class="sorthandle">M</div>
+											<div class="sorthandle"><apex:image value="{!$Resource.UpDownPng}" /></div>
 										</div>
 									</li>
 								</apex:repeat>
@@ -302,7 +320,7 @@ jQuery(function(){
 			</apex:outputPanel>
 			<div class="footers">
 				<div class="feature_name">Feature</div>
-				<div class="task_name">Tasks</div>
+				<div class="task_name">Task</div>
 				<div class="task_details">Details</div>
 				<div class="number">Estimate 50%</div>
 				<div class="number">Estimate 90%</div>

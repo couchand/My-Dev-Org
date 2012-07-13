@@ -49,11 +49,6 @@ global with sharing class ScopingTemplateController {
 					newFeatureIndex	= Integer.valueOf( params.get( NEW_FEATURE_TAG ) ),
 					newTaskIndex	= Integer.valueOf( params.get( NEW_TASK_TAG ) );
 			
-			/*
-			ApexPages.addMessage( new ApexPages.Message( ApexPages.Severity.INFO, 'Moving tasks from [' + oldFeatureIndex + ', ' + oldTaskIndex + ']' ) );
-			ApexPages.addMessage( new ApexPages.Message( ApexPages.Severity.INFO, 'Moving tasks to [' + newFeatureIndex + ', ' + newTaskIndex + ']' ) );
-			*/
-			
 			if( oldFeatureIndex == newFeatureIndex )
 			{
 				scope.features[oldFeatureIndex].moveTask( oldTaskIndex, newTaskIndex );
@@ -72,12 +67,18 @@ global with sharing class ScopingTemplateController {
 	
 	public void moveFeature()
 	{
-		Map<String, String> params = ApexPages.currentPage().getParameters();
-	
-		Integer oldFeatureIndex	= Integer.valueOf( params.get( OLD_FEATURE_TAG ) ),
-				newFeatureIndex	= Integer.valueOf( params.get( NEW_FEATURE_TAG ) );
+		try{
+			Map<String, String> params = ApexPages.currentPage().getParameters();
 		
-		scope.moveFeature( oldFeatureIndex, newFeatureIndex );
+			Integer oldFeatureIndex	= Integer.valueOf( params.get( OLD_FEATURE_TAG ) ),
+					newFeatureIndex	= Integer.valueOf( params.get( NEW_FEATURE_TAG ) );
+			
+			scope.moveFeature( oldFeatureIndex, newFeatureIndex );
+		}
+		catch( Exception e )
+		{
+			ApexPages.addMessage( new ApexPages.Message( ApexPages.Severity.FATAL, e.getMessage() ) );
+		}
 	}
 	
 	public ScopeModel loadScope( Id scopeId )
@@ -95,9 +96,11 @@ global with sharing class ScopingTemplateController {
 		List<Scoping_Feature__c> featureRecords = [SELECT Id, Name, Scope__c,
 														(SELECT Id, Name, Scoping_Feature__c,
 																Details__c, X50_Estimate__c, X90_Estimate__c
-														 FROM Scoping_Tasks__r)
+														 FROM Scoping_Tasks__r
+														 ORDER BY Sort_Order__c)
 													FROM Scoping_Feature__c
-													WHERE Scope__c = :scopeId];
+													WHERE Scope__c = :scopeId
+													ORDER BY Sort_Order__c];
 		
 		for( Scoping_Feature__c featureRecord : featureRecords )
 		{
@@ -140,42 +143,4 @@ global with sharing class ScopingTemplateController {
 		
 		upsert taskRecords;
 	}
-	
-	/*@RemoteAction global static ScopeModel getNewModel()
-	{
-		ScopeModel model = new ScopeModel();
-		model.name = 'SCOPE';
-		model.addFeature();
-		model.features[0].name = 'FEATURE';
-		model.features[0].addTask();
-		model.features[0].tasks[0].name = 'TASK';
-		return model;
-	}
-	
-	@RemoteAction global static void saveModel( String modelJSON )
-	{
-		ScopeModel model = new ScopeModel();
-		Scope__c record;
-		List<Scoping_Feature__c> features = new List<Scoping_Feature__c>();
-		
-		JSONObject json = new JSONObject( modelJSON );
-		
-		model.name = json.getString('name');
-		
-		record = model.getRecord();
-		upsert record;
-
-		for( JSONObject.Value jsonFeature : (List<JSONObject.Value>)json.get('features') )
-		{
-			ScopingFeatureModel feature = new ScopingFeatureModel();
-			
-			feature.scopeId = record.Id;
-			feature.name = ((JSONObject)jsonFeature.valueToObject()).getString('name');
-			
-			features.add( feature.getRecord() );
-		}
-		
-		upsert features;
-		
-	}*/
 }

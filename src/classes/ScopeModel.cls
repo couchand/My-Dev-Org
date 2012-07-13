@@ -11,6 +11,8 @@ global with sharing class ScopeModel {
 	public Decimal estimate50 { get; private set; }
 	public Decimal total { get; private set; }
 	
+	private Scope__c record;
+	
 	private ListModel featureList;
 	
 	public ScopeModel()
@@ -71,16 +73,19 @@ global with sharing class ScopeModel {
 	
 	public Scope__c getRecord()
 	{
-		Scope__c record = new Scope__c( Id = id );
-		
-		record.Name						= name;
-		record.Code_Review__c			= codeReview;
-		record.Deployment__c			= deployment;
-		record.Project_Management__c	= projectManagement;
-		record.Buffer__c				= buffer;
-		record.Reactive__c				= reactive;
-		record.Testing__c				= testing;
-		record.Sum_of_X50_Estimates__c	= sumEstimates();
+		if( null == record )
+		{
+			record = new Scope__c( Id = id );
+			
+			record.Name						= name;
+			record.Code_Review__c			= codeReview;
+			record.Deployment__c			= deployment;
+			record.Project_Management__c	= projectManagement;
+			record.Buffer__c				= buffer;
+			record.Reactive__c				= reactive;
+			record.Testing__c				= testing;
+			record.Sum_of_X50_Estimates__c	= sumEstimates();
+		}
 		
 		return record;
 	}

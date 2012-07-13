@@ -1,7 +1,8 @@
 public with sharing class ScopingFeatureModel extends ListModel.Element {
-	public Id scopeId { get; set; }
 	public Id id { get; private set; }
-	public String name { get; set; }
+	public Id scopeId	{ get; set; }
+	public String name	{ get; set; }
+	private Scoping_Feature__c record; 
 	
 	private ListModel taskList;
 	
@@ -18,15 +19,19 @@ public with sharing class ScopingFeatureModel extends ListModel.Element {
 		}
 	}
 	
-	public ScopingFeatureModel()//Id scopeId)
+	public ScopingFeatureModel()
 	{
-		//this.scopeId = scopeId;
 		taskList = new ListModel();
 	}
 	
-	public void addTask()
+	public ScopingTaskModel addTask()
 	{
-		taskList.add(new ScopingTaskModel());
+		ScopingTaskModel task = new ScopingTaskModel();
+		taskList.add( task );
+		
+		if( null != id ) task.featureId = id;
+		
+		return task;
 	}
 	
 	public ScopingTaskModel removeTask( Integer index )
@@ -44,7 +49,7 @@ public with sharing class ScopingFeatureModel extends ListModel.Element {
 		taskList.move( fromIndex, toIndex );
 	}
 	
-	public ScopingTaskModel addTask(Scoping_Task__c taskRecord)
+	public ScopingTaskModel addTask( Scoping_Task__c taskRecord )
 	{
 		ScopingTaskModel task = new ScopingTaskModel();
 		
@@ -55,19 +60,24 @@ public with sharing class ScopingFeatureModel extends ListModel.Element {
 		return task;
 	}
 	
-	public void setRecord(Scoping_Feature__c record)
+	public void setRecord( Scoping_Feature__c recordIn )
 	{
-		id = record.Id;
-		scopeId = record.Scope__c;
-		name = record.Name;
+		id		= recordIn.Id;
+		scopeId = recordIn.Scope__c;
+		name	= recordIn.Name;
 	}
 	
 	public Scoping_Feature__c getRecord()
 	{
-		Scoping_Feature__c record = new Scoping_Feature__c( Id = id );
+		if( null == record )
+		{
+			record = new Scoping_Feature__c( Id = id );
+			
+			record.Scope__c = scopeId;
+			record.Name		= name;
+		}
 		
-		record.Scope__c = scopeId;
-		record.Name = name;
+		record.Sort_Order__c = index;
 		
 		return record;
 	}
