@@ -11,7 +11,7 @@
 * 2012-03-31: Bluewolf Internal Development / Andrew Couch - Bluewolf
 *   Extend for scalability and refactor to use interface
 * 2012-07-13: Hackathon 5.0 / Andrew Couch - Bluewolf
-*   Rename to State
+*   Rename to State and add default implementations
 *
 */
 public class State
@@ -88,6 +88,11 @@ public class State
 			throw new ServerSideStateException( STATE_NOT_FOUND, qEx );
 		}
 
+		if( requestedStateObjects.isEmpty() )
+		{
+			throw new ServerSideStateException( STATE_NOT_FOUND );
+		}
+
 		stateToRetrieve.deserialize( concatState( requestedStateObjects ) );
 	}
 
@@ -128,5 +133,37 @@ public class State
 		String getStateToken();
 		String serialize();
 		void deserialize( String state );
+	}
+
+	public abstract class UserSObject implements IStateful
+	{
+		private String applicationToken;
+		private SObject sObjectStore;
+
+		public UserSObject( String application, SObject anSObject )
+		{
+			applicationToken = application;
+			sObjectStore = anSObject;
+		}
+
+		public String getStateToken()
+		{
+			return applicationToken + STATE_TOKEN_DELIM + UserInfo.getUserId() + STATE_TOKEN_DELIM + sObjectStore.Id;
+		}
+
+		public String serialize()
+		{
+			return JSON.serialize( sObjectStore );
+		}
+
+		public void deserialize( String state )
+		{
+			sObjectStore = (SObject) JSON.deserialize( state, SObject.class );
+		}
+
+		public SObject getSObject()
+		{
+			return sObjectStore;
+		}
 	}
 }

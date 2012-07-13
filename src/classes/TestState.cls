@@ -261,4 +261,62 @@ private class TestState
 			testData = state;
 		}
 	}
+
+	private static testMethod void testUserSObject_Valid()
+	{
+		Contact testLead = new Contact( FirstName = 'testing', LastName = 'lead' );
+		insert testLead;
+
+		TestUserSObject actualState = new TestUserSObject( new Contact( Id = testLead.Id ) );
+
+		Test.startTest();
+
+			System.runAs( testUser )
+			{
+				State.storeState( new TestUserSObject( testLead ) );
+				State.retrieveState( actualState );
+			}
+
+		Test.stopTest();
+
+		System.assertEquals( testLead, actualState.getSObject(), 'The state should store and retrieve properly.' );
+	}
+
+	private static testMethod void testUserSObject_OtherUser()
+	{
+		Contact testLead = new Contact( FirstName = 'testing', LastName = 'lead' );
+		insert testLead;
+		State.storeState( new TestUserSObject( testLead ) );
+
+		TestUserSObject actualState = new TestUserSObject( new Contact( Id = testLead.Id ) );
+
+		Exception actualException;
+
+		Test.startTest();
+
+			System.runAs( testUser )
+			{
+				try
+				{
+					State.retrieveState( actualState );
+				}
+				catch( Exception e )
+				{
+					actualException = e;
+				}
+			}
+
+		Test.stopTest();
+
+		System.assertNotEquals( null, actualException, 'A State Exception should be thrown if a user has no state' );
+		System.assertEquals( State.STATE_NOT_FOUND, actualException.getMessage(), 'The Exception should be a State Not Found exception' );
+	}
+
+	public class TestUserSObject extends State.UserSObject
+	{
+		public TestUserSObject( SObject anSObject )
+		{
+			super( 'test', anSObject );
+		}
+	}
 }
