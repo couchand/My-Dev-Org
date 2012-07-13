@@ -6,12 +6,16 @@ private class TestState {
 
 	private static final String TEST_STATE_SLUG = 'test.slug';
 
-	private static User testUser;
-
-	static {
-
-		testUser = new User( FirstName = 'Test', LastName = 'User' );
-
+	private static User testUser
+	{
+		get
+		{
+			if( null == testUser )
+			{
+				testUser = TestingUtils.createUser( 'State', true );
+			}
+			return testUser;
+		}
 	}
 
 	private static String generateTestString( String charac, Integer length ) {
