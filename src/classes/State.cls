@@ -14,8 +14,8 @@
 *   Rename to State
 *
 */
-public class State {
-
+public class State
+{
 	public static final String STATE_NOT_FOUND = 'Cannot find corresponding server side state!';
 	public static final String STATE_NOT_STORED = 'Cannot properly store state!';
 	public static final String STATE_SLUG_MISSING = 'Must specify a text slug representing functionality this state belongs to.';
@@ -25,8 +25,8 @@ public class State {
 	public static final String STATE_CHUNK_PREFIX = 'State_Chunk_';
 	public static final String STATE_TOKEN_DELIM = ' - ';
 
-	public static void storeState( IStateful stateToStore ) {
-
+	public static void storeState( IStateful stateToStore )
+	{
 		String theState = stateToStore.serialize();
 
 		List<State__c> oldStates = [SELECT Id FROM State__c WHERE Token__c = :stateToStore.getStateToken()];
@@ -52,24 +52,23 @@ public class State {
 
 		}
 
-		try {
-
+		try
+		{
 			insert newStates;
-
-		} catch( System.DmlException dmlEx ) {
-
+		}
+		catch( System.DmlException dmlEx )
+		{
 			throw new ServerSideStateException( STATE_NOT_STORED, dmlEx );
-
 		}
 
 	}
 
-	public static void retrieveState( IStateful stateToRetrieve ) {
-
+	public static void retrieveState( IStateful stateToRetrieve )
+	{
 		List<State__c> requestedStateObjects;
 
-		try {
-
+		try
+		{
 			requestedStateObjects = [ SELECT Id, state_chunk_1__c ,
 									 state_chunk_2__c ,
 									 state_chunk_3__c ,
@@ -83,19 +82,17 @@ public class State {
 									 FROM State__c
 									 WHERE Token__c = :stateToRetrieve.getStateToken()
 									 ORDER BY Index__c ];
-
-		} catch( System.QueryException qEx ) {
-
+		}
+		catch( System.QueryException qEx )
+		{
 			throw new ServerSideStateException( STATE_NOT_FOUND, qEx );
-
 		}
 
 		stateToRetrieve.deserialize( concatState( requestedStateObjects ) );
-
 	}
 
-	private static String concatState( List<State__c> statesToConcat ) {
-
+	private static String concatState( List<State__c> statesToConcat )
+	{
 		String concatString = '';
 
 		for( State__c stateToConcat : statesToConcat )
@@ -104,37 +101,32 @@ public class State {
 					concatString += stateToConcat.get( STATE_CHUNK_PREFIX + stateFieldIndex + '__c' );
 
 		return concatString;
-
 	}
 
 	//TODO: Move to StringUtils
-	public static List<String> splitByLength( String stringToSplit, Integer length ) {
-
+	public static List<String> splitByLength( String stringToSplit, Integer length )
+	{
 		List<String> splitStrings = new List<String>();
 		Integer strPosit = 0;
 
-		while ( strPosit < stringToSplit.length() ) {
-
+		while ( strPosit < stringToSplit.length() )
+		{
 			Integer endPosit = Math.min( strPosit + length, stringToSplit.length() );
 
 			splitStrings.add( stringToSplit.substring( strPosit, endPosit ) );
 
 			strPosit = strPosit + length;
-
 		}
 
 		return splitStrings;
-
 	}
 
 	public class ServerSideStateException extends Exception { }
 
-	public interface IStateful {
-
+	public interface IStateful
+	{
 		String getStateToken();
 		String serialize();
 		void deserialize( String state );
-
 	}
-
 }
