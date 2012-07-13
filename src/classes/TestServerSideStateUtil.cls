@@ -1,15 +1,6 @@
-/* ServerSideStateUtilTest
-*
-* This class is related to Order Prioritization functionality
-* This test class tests functionality belonging to ServerSideStateUtil
-*
-* 2011-12-05: Case# 00171892 / Michael Ng & William Saunders - Bluewolf
-* 	Inital development of functionality
-* 2012-03-31: Bluewolf Internal Development / Andrew Couch - Bluewolf
-*   Extend for scalability and refactor to use interface
+/*
+*  TestServerSideStateUtil
 */
-// @TODO: Remove SeeAllData annotation when UserServices is fixed
-@isTest(SeeAllData=true)
 private class TestServerSideStateUtil {
 
 	private static final String TEST_STATE_SLUG = 'test.slug';
@@ -18,7 +9,7 @@ private class TestServerSideStateUtil {
 
 	static {
 
-		testUser = TestingUtils.createUser( 'TUser', TestingUtils.BEYOND_CONSULTANT_PROFILE_ID, true );
+		testUser = new User( FirstName = 'Test', LastName = 'User' );
 
 	}
 
