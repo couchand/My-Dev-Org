@@ -1,6 +1,7 @@
 /*
 *  TestServerSideStateUtil
 */
+@isTest
 private class TestServerSideStateUtil {
 
 	private static final String TEST_STATE_SLUG = 'test.slug';
