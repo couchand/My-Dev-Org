@@ -1,8 +1,8 @@
 /*
-*  TestServerSideStateUtil
+*  TestState
 */
 @isTest
-private class TestServerSideStateUtil {
+private class TestState {
 
 	private static final String TEST_STATE_SLUG = 'test.slug';
 
@@ -27,23 +27,23 @@ private class TestServerSideStateUtil {
 
 	static testMethod void storeState() {
 
-		String baseStateChunk = generateTestString( '1', ServerSideStateUtil.TEXT_UPPER_LIMIT );
+		String baseStateChunk = generateTestString( '1', State.TEXT_UPPER_LIMIT );
 		String testState = baseStateChunk;
 
-		for ( Integer testIndex = 2; testIndex < ServerSideStateUtil.STATE_CHUNK_COUNT; testIndex++ )
+		for ( Integer testIndex = 2; testIndex < State.STATE_CHUNK_COUNT; testIndex++ )
 			testState += baseStateChunk;
 
 		Test.startTest();
 
 			System.runAs( testUser ) {
 
-				ServerSideStateUtil.storeState( new TestStateful( testState ) );
+				State.storeState( new TestStateful( testState ) );
 
 			}
 
 		Test.stopTest();
 
-		List<Serverside_State__c> resolvedState = [ SELECT Id,
+		List<State__c> resolvedState = [ SELECT Id,
 												state_chunk_1__c,
 												state_chunk_2__c,
 												state_chunk_3__c,
@@ -55,17 +55,17 @@ private class TestServerSideStateUtil {
 												state_chunk_9__c,
 												state_chunk_10__c,
 												Token__c
-												FROM Serverside_State__c
+												FROM State__c
 												WHERE OwnerId = :testUser.Id ];
 
 		System.assertEquals( 1, resolvedState.size(), 'Only one state should have been created!' );
-		System.assertEquals( testUser.Id + ServerSideStateUtil.STATE_TOKEN_DELIM + TEST_STATE_SLUG, resolvedState[0].Token__c, 'Token should have been generated correctly.' );
+		System.assertEquals( testUser.Id + State.STATE_TOKEN_DELIM + TEST_STATE_SLUG, resolvedState[0].Token__c, 'Token should have been generated correctly.' );
 
 		String fieldValueExpected = baseStateChunk;
 
-		for ( Integer testIndex = 1; testIndex < ServerSideStateUtil.STATE_CHUNK_COUNT; testIndex++ ) {
+		for ( Integer testIndex = 1; testIndex < State.STATE_CHUNK_COUNT; testIndex++ ) {
 
-			String resolvedFieldActual = String.valueOf( resolvedState[0].get( ServerSideStateUtil.STATE_CHUNK_PREFIX + testIndex + '__c' ) );
+			String resolvedFieldActual = String.valueOf( resolvedState[0].get( State.STATE_CHUNK_PREFIX + testIndex + '__c' ) );
 
 			System.assertEquals( fieldValueExpected, resolvedFieldActual );
 
@@ -75,19 +75,19 @@ private class TestServerSideStateUtil {
 
 	static testMethod void ensureSingleState() {
 
-		String baseStateChunk = generateTestString( '1', ServerSideStateUtil.TEXT_UPPER_LIMIT );
+		String baseStateChunk = generateTestString( '1', State.TEXT_UPPER_LIMIT );
 		String testState = baseStateChunk;
 
-		for ( Integer testIndex = 2; testIndex < ServerSideStateUtil.STATE_CHUNK_COUNT; testIndex++ )
+		for ( Integer testIndex = 2; testIndex < State.STATE_CHUNK_COUNT; testIndex++ )
 			testState += baseStateChunk;
 
 		System.runAs( testUser ) {
 
-			ServerSideStateUtil.storeState( new TestStateful( testState ) );
+			State.storeState( new TestStateful( testState ) );
 
 		}
 
-		List<Serverside_State__c> resolvedState = [ SELECT Id FROM Serverside_State__c WHERE OwnerId = :testUser.Id ];
+		List<State__c> resolvedState = [ SELECT Id FROM State__c WHERE OwnerId = :testUser.Id ];
 
 		System.assertEquals( 1, resolvedState.size(), 'Only one state should have been created!' );
 
@@ -95,13 +95,13 @@ private class TestServerSideStateUtil {
 
 			System.runAs( testUser ) {
 
-				ServerSideStateUtil.storeState( new TestStateful( testState ) );
+				State.storeState( new TestStateful( testState ) );
 
 			}
 
 		Test.stopTest();
 
-		resolvedState = [ SELECT Id, State_Token__c FROM Serverside_State__c WHERE OwnerId = :testUser.Id ];
+		resolvedState = [ SELECT Id, State_Token__c FROM State__c WHERE OwnerId = :testUser.Id ];
 
 		System.assertEquals( 1, resolvedState.size(), 'Only one state should have been created!' );
 
@@ -109,9 +109,9 @@ private class TestServerSideStateUtil {
 
 	static testMethod void retrieveState() {
 
-		String stateChunkString = generateTestString( 'a', ServerSideStateUtil.TEXT_UPPER_LIMIT );
+		String stateChunkString = generateTestString( 'a', State.TEXT_UPPER_LIMIT );
 
-		Serverside_State__c testState = new Serverside_State__c( state_chunk_1__c = stateChunkString,
+		State__c testState = new State__c( state_chunk_1__c = stateChunkString,
 																 state_chunk_2__c = stateChunkString,
 																 state_chunk_3__c = stateChunkString,
 																 state_chunk_4__c = stateChunkString,
@@ -122,7 +122,7 @@ private class TestServerSideStateUtil {
 																 state_chunk_9__c = stateChunkString,
 																 state_chunk_10__c = stateChunkString,
 																 Index__c = 0,
-																 Token__c = testUser.Id + ServerSideStateUtil.STATE_TOKEN_DELIM + TEST_STATE_SLUG );
+																 Token__c = testUser.Id + State.STATE_TOKEN_DELIM + TEST_STATE_SLUG );
 
 																// ^ This is what a State Token looks like.
 
@@ -134,33 +134,33 @@ private class TestServerSideStateUtil {
 
 		System.runAs( testUser ) {
 
-			ServerSideStateUtil.retrieveState( resolvedState );
+			State.retrieveState( resolvedState );
 
 		}
 
 		Test.stopTest();
 
-		System.assertEquals( ServerSideStateUtil.STATE_CHUNK_COUNT * ServerSideStateUtil.TEXT_UPPER_LIMIT, resolvedState.getTestData().length() );
+		System.assertEquals( State.STATE_CHUNK_COUNT * State.TEXT_UPPER_LIMIT, resolvedState.getTestData().length() );
 
 	}
 
 	static testMethod void testStoreLongState() {
 
-		String baseStateChunk = generateTestString( '1', ServerSideStateUtil.TEXT_UPPER_LIMIT );
+		String baseStateChunk = generateTestString( '1', State.TEXT_UPPER_LIMIT );
 		String testState = baseStateChunk;
 
-		for ( Integer testIndex = 0; testIndex < ServerSideStateUtil.STATE_CHUNK_COUNT + 2; testIndex++ )
+		for ( Integer testIndex = 0; testIndex < State.STATE_CHUNK_COUNT + 2; testIndex++ )
 			testState += baseStateChunk;
 
 		System.runAs( testUser ) {
 
 			Test.startTest();
-				ServerSideStateUtil.storeState( new TestStateful( testState ) );
+				State.storeState( new TestStateful( testState ) );
 			Test.stopTest();
 
 		}
 
-		List<Serverside_State__c> resolvedState = [ SELECT Id,
+		List<State__c> resolvedState = [ SELECT Id,
 												state_chunk_1__c,
 												state_chunk_2__c,
 												state_chunk_3__c,
@@ -172,21 +172,21 @@ private class TestServerSideStateUtil {
 												state_chunk_9__c,
 												state_chunk_10__c,
 												Token__c, Index__c
-												FROM Serverside_State__c
+												FROM State__c
 												WHERE OwnerId = :testUser.Id
 												ORDER BY Index__c ];
 
 		System.assertEquals( 2, resolvedState.size(), 'Only one state should have been created!' );
 		System.assertEquals( 0, resolvedState[0].Index__c, 'The index number of the state should be set.' );
-		System.assertEquals( testUser.Id + ServerSideStateUtil.STATE_TOKEN_DELIM + TEST_STATE_SLUG, resolvedState[0].Token__c, 'Token should have been generated correctly.' );
+		System.assertEquals( testUser.Id + State.STATE_TOKEN_DELIM + TEST_STATE_SLUG, resolvedState[0].Token__c, 'Token should have been generated correctly.' );
 		System.assertEquals( 1, resolvedState[1].Index__c, 'The index number of the state should be set.' );
-		System.assertEquals( testUser.Id + ServerSideStateUtil.STATE_TOKEN_DELIM + TEST_STATE_SLUG, resolvedState[1].Token__c, 'Token should have been generated correctly.' );
+		System.assertEquals( testUser.Id + State.STATE_TOKEN_DELIM + TEST_STATE_SLUG, resolvedState[1].Token__c, 'Token should have been generated correctly.' );
 
 		String fieldValueExpected = baseStateChunk;
 
-		for ( Integer testIndex = 1; testIndex < ServerSideStateUtil.STATE_CHUNK_COUNT; testIndex++ ) {
+		for ( Integer testIndex = 1; testIndex < State.STATE_CHUNK_COUNT; testIndex++ ) {
 
-			String resolvedFieldActual = String.valueOf( resolvedState[0].get( ServerSideStateUtil.STATE_CHUNK_PREFIX + testIndex + '__c' ) );
+			String resolvedFieldActual = String.valueOf( resolvedState[0].get( State.STATE_CHUNK_PREFIX + testIndex + '__c' ) );
 
 			System.assertEquals( fieldValueExpected, resolvedFieldActual );
 
@@ -194,15 +194,15 @@ private class TestServerSideStateUtil {
 		
 		for ( Integer testIndex = 1; testIndex < 4; testIndex++ ) {
 
-			String resolvedFieldActual = String.valueOf( resolvedState[1].get( ServerSideStateUtil.STATE_CHUNK_PREFIX + testIndex + '__c' ) );
+			String resolvedFieldActual = String.valueOf( resolvedState[1].get( State.STATE_CHUNK_PREFIX + testIndex + '__c' ) );
 
 			System.assertEquals( fieldValueExpected, resolvedFieldActual );
 
 		}
 		
-		for ( Integer testIndex = 4; testIndex < ServerSideStateUtil.STATE_CHUNK_COUNT; testIndex++ ) {
+		for ( Integer testIndex = 4; testIndex < State.STATE_CHUNK_COUNT; testIndex++ ) {
 
-			String resolvedFieldActual = String.valueOf( resolvedState[1].get( ServerSideStateUtil.STATE_CHUNK_PREFIX + testIndex + '__c' ) );
+			String resolvedFieldActual = String.valueOf( resolvedState[1].get( State.STATE_CHUNK_PREFIX + testIndex + '__c' ) );
 
 			System.assertEquals( null, resolvedFieldActual );
 
@@ -212,11 +212,11 @@ private class TestServerSideStateUtil {
 
 	static testMethod void testFlowLongState()
 	{
-		String baseStateChunk = generateTestString( '1', ServerSideStateUtil.TEXT_UPPER_LIMIT );
+		String baseStateChunk = generateTestString( '1', State.TEXT_UPPER_LIMIT );
 		String testState = baseStateChunk;
 		TestStateful actualState = new TestStateful();
 
-		for ( Integer testIndex = 0; testIndex < ServerSideStateUtil.STATE_CHUNK_COUNT; testIndex++ )
+		for ( Integer testIndex = 0; testIndex < State.STATE_CHUNK_COUNT; testIndex++ )
 			testState += baseStateChunk;
 		
 		testState += '12';
@@ -224,8 +224,8 @@ private class TestServerSideStateUtil {
 		System.runAs( testUser ) {
 
 			Test.startTest();
-				ServerSideStateUtil.storeState( new TestStateful( testState ) );
-				ServerSideStateUtil.retrieveState( actualState );
+				State.storeState( new TestStateful( testState ) );
+				State.retrieveState( actualState );
 			Test.stopTest();
 
 		}
@@ -233,7 +233,7 @@ private class TestServerSideStateUtil {
 		System.assert( testState.equals( actualState.getTestData() ), 'The state should store and retrieve properly.' );
 	}
 
-	public class TestStateful implements ServerSideStateUtil.IStateful {
+	public class TestStateful implements State.IStateful {
 
 		private String testData;
 
@@ -257,7 +257,7 @@ private class TestServerSideStateUtil {
 
 		public String getStateToken() {
 
-			return UserInfo.getUserId() + ServerSideStateUtil.STATE_TOKEN_DELIM + TEST_STATE_SLUG;
+			return UserInfo.getUserId() + State.STATE_TOKEN_DELIM + TEST_STATE_SLUG;
 
 		}
 

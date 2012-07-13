@@ -134,7 +134,7 @@ This object was first created for use with the Order Prioritization project.</de
     <fields>
         <fullName>State_Token__c</fullName>
         <caseSensitive>false</caseSensitive>
-        <description>Piece of text to differentiate the Serverside States stored by functionality or application they correspond to.</description>
+        <description>Piece of text to differentiate the States stored by functionality or application they correspond to.</description>
         <externalId>true</externalId>
         <label>State Token</label>
         <length>255</length>
@@ -151,13 +151,13 @@ This object was first created for use with the Order Prioritization project.</de
         <type>Text</type>
         <unique>false</unique>
     </fields>
-    <label>Serverside State</label>
+    <label>State</label>
     <nameField>
-        <displayFormat>SST-{0000}</displayFormat>
-        <label>Serverside State Name</label>
+        <displayFormat>ST-{0000}</displayFormat>
+        <label>State Name</label>
         <type>AutoNumber</type>
     </nameField>
-    <pluralLabel>Serverside States</pluralLabel>
+    <pluralLabel>States</pluralLabel>
     <searchLayouts/>
     <sharingModel>ReadWrite</sharingModel>
 </CustomObject>

@@ -1,4 +1,5 @@
-/** ServerSideStateUtil
+/**
+*  State
 *
 * Utility allowing users to arbitrarily store data assosciated with a specific User and/or Session,
 * potentially allowing developer to cut down on amount of data Salesforce needs to send during page
@@ -9,9 +10,11 @@
 *   First pass at ServersideState utility
 * 2012-03-31: Bluewolf Internal Development / Andrew Couch - Bluewolf
 *   Extend for scalability and refactor to use interface
+* 2012-07-13: Hackathon 5.0 / Andrew Couch - Bluewolf
+*   Rename to State
 *
 */
-public class ServerSideStateUtil {
+public class State {
 
 	public static final String STATE_NOT_FOUND = 'Cannot find corresponding server side state!';
 	public static final String STATE_NOT_STORED = 'Cannot properly store state!';
@@ -26,21 +29,21 @@ public class ServerSideStateUtil {
 
 		String theState = stateToStore.serialize();
 
-		List<Serverside_State__c> oldStates = [SELECT Id FROM Serverside_State__c WHERE Token__c = :stateToStore.getStateToken()];
+		List<State__c> oldStates = [SELECT Id FROM State__c WHERE Token__c = :stateToStore.getStateToken()];
 		if( !oldStates.isEmpty() )
 			delete oldStates;
 
 		Integer numObjects = Integer.valueOf( Decimal.valueOf( theState.length() ).divide( STATE_CHUNK_COUNT * TEXT_UPPER_LIMIT, 0, System.RoundingMode.CEILING ) );
 
 		List<String> stateSplits = splitByLength( theState, TEXT_UPPER_LIMIT );
-		List<Serverside_State__c> newStates = new List<Serverside_State__c>();
+		List<State__c> newStates = new List<State__c>();
 
 		for( Integer objectIndex = 0; objectIndex < numObjects; objectIndex++ )
 		{
 
 			Integer splitOffset = objectIndex * STATE_CHUNK_COUNT;
 
-			Serverside_State__c newState = new Serverside_State__c( Token__c = stateToStore.getStateToken(), Index__c = objectIndex );
+			State__c newState = new State__c( Token__c = stateToStore.getStateToken(), Index__c = objectIndex );
 
 			for ( Integer splitIndex = 0; splitIndex < STATE_CHUNK_COUNT && splitOffset + splitIndex < stateSplits.size(); splitIndex++ )
 				newState.put( STATE_CHUNK_PREFIX + ( splitIndex + 1 ) + '__c', stateSplits[ splitOffset + splitIndex ] );		// +1 as field names dont start at 0
@@ -63,7 +66,7 @@ public class ServerSideStateUtil {
 
 	public static void retrieveState( IStateful stateToRetrieve ) {
 
-		List<Serverside_State__c> requestedStateObjects;
+		List<State__c> requestedStateObjects;
 
 		try {
 
@@ -77,7 +80,7 @@ public class ServerSideStateUtil {
 									 state_chunk_8__c ,
 									 state_chunk_9__c ,
 									 state_chunk_10__c
-									 FROM Serverside_State__c
+									 FROM State__c
 									 WHERE Token__c = :stateToRetrieve.getStateToken()
 									 ORDER BY Index__c ];
 
@@ -91,11 +94,11 @@ public class ServerSideStateUtil {
 
 	}
 
-	private static String concatState( List<Serverside_State__c> statesToConcat ) {
+	private static String concatState( List<State__c> statesToConcat ) {
 
 		String concatString = '';
 
-		for( Serverside_State__c stateToConcat : statesToConcat )
+		for( State__c stateToConcat : statesToConcat )
 			for ( Integer stateFieldIndex = 1; stateFieldIndex < STATE_CHUNK_COUNT+1; stateFieldIndex++ )
 				if( null != stateToConcat.get( STATE_CHUNK_PREFIX + stateFieldIndex + '__c' ) )
 					concatString += stateToConcat.get( STATE_CHUNK_PREFIX + stateFieldIndex + '__c' );
