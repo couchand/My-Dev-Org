@@ -24,7 +24,7 @@ public class State
 	public static final String STATE_CHUNK_PREFIX = 'State_Chunk_';
 	public static final String STATE_TOKEN_DELIM = ' - ';
 
-	public static void storeState( IStateful stateToStore )
+	public static void store( IStateful stateToStore )
 	{
 		String theState = stateToStore.serialize();
 
@@ -62,7 +62,7 @@ public class State
 
 	}
 
-	public static void retrieveState( IStateful stateToRetrieve )
+	public static void retrieve( IStateful stateToRetrieve )
 	{
 		List<State__c> requestedStateObjects;
 

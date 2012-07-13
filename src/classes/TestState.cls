@@ -29,7 +29,7 @@ private class TestState
 
 	}
 
-	static testMethod void storeState()
+	static testMethod void store()
 	{
 		String baseStateChunk = generateTestString( '1', State.TEXT_UPPER_LIMIT );
 		String testState = baseStateChunk;
@@ -41,7 +41,7 @@ private class TestState
 
 			System.runAs( testUser )
 			{
-				State.storeState( new TestStateful( testState ) );
+				State.store( new TestStateful( testState ) );
 			}
 
 		Test.stopTest();
@@ -84,7 +84,7 @@ private class TestState
 
 		System.runAs( testUser )
 		{
-			State.storeState( new TestStateful( testState ) );
+			State.store( new TestStateful( testState ) );
 		}
 
 		List<State__c> resolvedState = [ SELECT Id FROM State__c WHERE OwnerId = :testUser.Id ];
@@ -95,7 +95,7 @@ private class TestState
 
 			System.runAs( testUser )
 			{
-				State.storeState( new TestStateful( testState ) );
+				State.store( new TestStateful( testState ) );
 			}
 
 		Test.stopTest();
@@ -105,7 +105,7 @@ private class TestState
 		System.assertEquals( 1, resolvedState.size(), 'Only one state should have been created!' );
 	}
 
-	static testMethod void retrieveState()
+	static testMethod void retrieve()
 	{
 		String stateChunkString = generateTestString( 'a', State.TEXT_UPPER_LIMIT );
 
@@ -132,7 +132,7 @@ private class TestState
 
 			System.runAs( testUser )
 			{
-				State.retrieveState( resolvedState );
+				State.retrieve( resolvedState );
 			}
 
 		Test.stopTest();
@@ -140,7 +140,7 @@ private class TestState
 		System.assertEquals( State.STATE_CHUNK_COUNT * State.TEXT_UPPER_LIMIT, resolvedState.getTestData().length() );
 	}
 
-	static testMethod void testStoreLongState()
+	static testMethod void store_LongState()
 	{
 		String baseStateChunk = generateTestString( '1', State.TEXT_UPPER_LIMIT );
 		String testState = baseStateChunk;
@@ -152,7 +152,7 @@ private class TestState
 
 			System.runAs( testUser )
 			{
-				State.storeState( new TestStateful( testState ) );
+				State.store( new TestStateful( testState ) );
 			}
 
 		Test.stopTest();
@@ -203,7 +203,7 @@ private class TestState
 		}
 	}
 
-	static testMethod void testFlowLongState()
+	static testMethod void flow_LongState()
 	{
 		String baseStateChunk = generateTestString( '1', State.TEXT_UPPER_LIMIT );
 		String testState = baseStateChunk;
@@ -218,8 +218,8 @@ private class TestState
 
 			System.runAs( testUser )
 			{
-				State.storeState( new TestStateful( testState ) );
-				State.retrieveState( actualState );
+				State.store( new TestStateful( testState ) );
+				State.retrieve( actualState );
 			}
 
 		Test.stopTest();
@@ -273,8 +273,8 @@ private class TestState
 
 			System.runAs( testUser )
 			{
-				State.storeState( new TestUserSObject( testLead ) );
-				State.retrieveState( actualState );
+				State.store( new TestUserSObject( testLead ) );
+				State.retrieve( actualState );
 			}
 
 		Test.stopTest();
@@ -286,7 +286,7 @@ private class TestState
 	{
 		Contact testLead = new Contact( FirstName = 'testing', LastName = 'lead' );
 		insert testLead;
-		State.storeState( new TestUserSObject( testLead ) );
+		State.store( new TestUserSObject( testLead ) );
 
 		TestUserSObject actualState = new TestUserSObject( new Contact( Id = testLead.Id ) );
 
@@ -298,7 +298,7 @@ private class TestState
 			{
 				try
 				{
-					State.retrieveState( actualState );
+					State.retrieve( actualState );
 				}
 				catch( State.StateException e )
 				{
