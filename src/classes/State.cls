@@ -18,7 +18,6 @@ public class State
 {
 	public static final String STATE_NOT_FOUND = 'Cannot find corresponding server side state!';
 	public static final String STATE_NOT_STORED = 'Cannot properly store state!';
-	public static final String STATE_SLUG_MISSING = 'Must specify a text slug representing functionality this state belongs to.';
 
 	public static final Integer TEXT_UPPER_LIMIT = 32768;
 	public static final Integer STATE_CHUNK_COUNT = 10;
