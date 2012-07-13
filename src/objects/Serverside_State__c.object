@@ -42,6 +42,16 @@ This object was first created for use with the Order Prioritization project.</de
     <enableHistory>false</enableHistory>
     <enableReports>false</enableReports>
     <fields>
+        <fullName>Index__c</fullName>
+        <externalId>false</externalId>
+        <label>Index</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
         <fullName>State_Chunk_10__c</fullName>
         <externalId>false</externalId>
         <label>State Chunk 10</label>
@@ -131,6 +141,15 @@ This object was first created for use with the Order Prioritization project.</de
         <required>false</required>
         <type>Text</type>
         <unique>true</unique>
+    </fields>
+    <fields>
+        <fullName>Token__c</fullName>
+        <externalId>false</externalId>
+        <label>Token</label>
+        <length>255</length>
+        <required>false</required>
+        <type>Text</type>
+        <unique>false</unique>
     </fields>
     <label>Serverside State</label>
     <nameField>
