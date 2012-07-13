@@ -58,7 +58,7 @@ public class State
 		}
 		catch( System.DmlException dmlEx )
 		{
-			throw new ServerSideStateException( STATE_NOT_STORED, dmlEx );
+			throw new StateException( STATE_NOT_STORED, dmlEx );
 		}
 
 	}
@@ -85,12 +85,12 @@ public class State
 		}
 		catch( System.QueryException qEx )
 		{
-			throw new ServerSideStateException( STATE_NOT_FOUND, qEx );
+			throw new StateException( STATE_NOT_FOUND, qEx );
 		}
 
 		if( requestedStateObjects.isEmpty() )
 		{
-			throw new ServerSideStateException( STATE_NOT_FOUND );
+			throw new StateException( STATE_NOT_FOUND );
 		}
 
 		stateToRetrieve.deserialize( concatState( requestedStateObjects ) );
@@ -126,7 +126,7 @@ public class State
 		return splitStrings;
 	}
 
-	public class ServerSideStateException extends Exception { }
+	public class StateException extends Exception { }
 
 	public interface IStateful
 	{

@@ -300,7 +300,7 @@ private class TestState
 				{
 					State.retrieveState( actualState );
 				}
-				catch( Exception e )
+				catch( State.StateException e )
 				{
 					actualException = e;
 				}
