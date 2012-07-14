@@ -31,10 +31,17 @@ public class MergingSObjectRepository implements ISObjectRepository
 
 	private SObject mergeSObjects( SObject current, SObject newOne, SObject oldOne )
 	{
+		DateTime currentModified = (DateTime)current.get('LastModifiedDate');
+		DateTime oldModified = (DateTime)oldOne.get('LastModifiedDate');
+
+		if( currentModified > oldModified )
+			throw new SObjectChangedException('Object changed since you loaded this page!');
+
 		return newOne;
 	}
 
 	public class SObjectNotFoundException extends Exception {}
+	public class SObjectChangedException extends Exception {}
 
 	private class UserSObject extends State.UserSObject
 	{
