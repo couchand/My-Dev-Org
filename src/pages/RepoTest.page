@@ -1,5 +1,5 @@
 <apex:page controller="RepoTestController" action="{!load}">
-	<apex:form>
+	<apex:form >
 		<apex:messages />
 		<apex:inputField value="{!obj.Name}" />
 		<apex:commandButton action="{!save}" value="Save" />
