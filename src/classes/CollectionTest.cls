@@ -5,6 +5,8 @@
 
     private static testMethod void testFor()
     {
+        Integer iterativeStart = Limits.getScriptStatements();
+
         Integer expectedTotal = 0;
 
         for ( Integer input : inputs )
@@ -12,10 +14,16 @@
             expectedTotal += input * input;
         }
 
+        Integer iterativeStop = Limits.getScriptStatements();
+
         Test.startTest();
+
+            Integer functionalStart = Limits.getScriptStatements();
 
             Collection squared = values.doMap( new Squarer() );
             Object totalObj = squared.doReduce( new Summer() );
+
+            Integer functionalStop = Limits.getScriptStatements();
 
         Test.stopTest();
 
@@ -24,6 +32,15 @@
         Integer actualTotal = (Integer)totalObj;
 
         System.assertEquals( expectedTotal, actualTotal );
+
+        System.assert( false,
+            'iterative ' +
+            (iterativeStop - iterativeStart) + ' statements ' +
+            '[' + iterativeStart + ',' + iterativeStop + '] ' +
+            'functional ' +
+            (functionalStop - functionalStart) + ' statements ' +
+            '[' + functionalStart + ',' +functionalStop + ']'
+        );
     }
 
     public class Squarer implements Collection.Mapper
@@ -40,15 +57,15 @@
     {
         public Object doReduce( Object input, Object current )
         {
-            Integer left  = input   == null ? 0 : (Integer)input;
-            Integer right = current == null ? 0 : (Integer)current;
-
-            return left + right;
+            return ( input == null ? 0 : (Integer)input ) +
+                   ( current == null ? 0 : (Integer)current );
         }
     }
 
     private static testMethod void testGroup()
     {
+        Integer iterativeStart = Limits.getScriptStatements();
+
         Set<Integer> odds = new Set<Integer>();
         Set<Integer> evens = new Set<Integer>();
 
@@ -64,9 +81,15 @@
             }
         }
 
+        Integer iterativeStop = Limits.getScriptStatements();
+
         Test.startTest();
 
+            Integer functionalStart = Limits.getScriptStatements();
+
             Map<Object, Collection> groups = values.doGroup( new OddEvener() );
+
+            Integer functionalStop = Limits.getScriptStatements();
 
         Test.stopTest();
 
@@ -84,15 +107,22 @@
             System.assert( value instanceof Integer );
             System.assert( odds.contains( (Integer)value ) );
         }
+
+        System.assert( false,
+            'iterative ' +
+            (iterativeStop - iterativeStart) + ' statements ' +
+            '[' + iterativeStart + ',' + iterativeStop + '] ' +
+            'functional ' +
+            (functionalStop - functionalStart) + ' statements ' +
+            '[' + functionalStart + ',' +functionalStop + ']'
+        );
     }
 
     public class OddEvener implements Collection.Mapper
     {
         public Object doMap( Object input )
         {
-            Integer value = (Integer)input;
-
-            return Math.mod( value, 2 ) == 0 ? 'even' : 'odd';
+            return Math.mod( (Integer)input, 2 ) == 0 ? 'even' : 'odd';
         }
     }
 }

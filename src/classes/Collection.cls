@@ -44,7 +44,16 @@ public class Collection
 
     public Map<Object, Collection> doGroup( Mapper mapper )
     {
-        return (Map<Object, Collection>)doReduce( new GroupingReducer( mapper ), new Map<Object, Collection>() );
+        Map<Object, List<Object>> reduced = (Map<Object, List<Object>>)doReduce( new GroupingReducer( mapper ), new Map<Object, List<Object>>() );
+
+        Map<Object, Collection> collections = new Map<Object, Collection>();
+
+        for ( Object key : reduced.keySet() )
+        {
+            collections.put( key, new Collection( reduced.get( key ) ) );
+        }
+
+        return collections;
     }
 
     public class GroupingReducer implements Reducer
@@ -58,7 +67,7 @@ public class Collection
 
         public Object doReduce( Object input, Object current )
         {
-            Map<Object, Collection> theMap = (Map<Object, Collection>)current;
+            Map<Object, List<Object>> theMap = (Map<Object, List<Object>>)current;
 
             Object key = mapper.doMap( input );
 
@@ -68,7 +77,7 @@ public class Collection
             }
             else
             {
-                theMap.put( key, new Collection( new List<Object>{ input } ) );
+                theMap.put( key, new List<Object>{ input } );
             }
 
             return theMap;
