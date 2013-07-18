@@ -3,11 +3,15 @@ public class Collection
     public interface Mapper
     {
         Object doMap( Object input );
+        Type getInputType();
+        Type getOutputType();
     }
 
     public interface Reducer
     {
         Object doReduce( Object input, Object current );
+        Type getInputType();
+        Type getOutputType();
     }
 
     public Collection( List<Object> members )
@@ -81,6 +85,16 @@ public class Collection
             }
 
             return theMap;
+        }
+
+        public Type getInputType()
+        {
+            return mapper.getInputType();
+        }
+
+        public Type getOutputType()
+        {
+            return Type.forName('Map<' + mapper.getOutputType() + ',' + mapper.getInputType() + '>');
         }
     }
 

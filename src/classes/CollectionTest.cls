@@ -51,6 +51,16 @@
 
             return value * value;
         }
+
+        public Type getInputType()
+        {
+            return Integer.class;
+        }
+
+        public Type getOutputType()
+        {
+            return Integer.class;
+        }
     }
 
     public class Summer implements Collection.Reducer
@@ -59,6 +69,16 @@
         {
             return ( input == null ? 0 : (Integer)input ) +
                    ( current == null ? 0 : (Integer)current );
+        }
+
+        public Type getInputType()
+        {
+            return Integer.class;
+        }
+
+        public Type getOutputType()
+        {
+            return Integer.class;
         }
     }
 
@@ -118,11 +138,36 @@
         );
     }
 
+    private static testMethod void testGroupingReducerTypes()
+    {
+        Collection.Reducer grouper = new Collection.GroupingReducer( new OddEvener() );
+
+        Test.startTest();
+
+            Type inputType = grouper.getInputType();
+            Type outputType = grouper.getOutputType();
+
+        Test.stopTest();
+
+        System.assertEquals( Integer.class, inputType );
+        System.assertEquals( Type.forName('Map<String, Integer>'), outputType );
+    }
+
     public class OddEvener implements Collection.Mapper
     {
         public Object doMap( Object input )
         {
             return Math.mod( (Integer)input, 2 ) == 0 ? 'even' : 'odd';
+        }
+
+        public Type getInputType()
+        {
+            return Integer.class;
+        }
+
+        public Type getOutputType()
+        {
+            return String.class;
         }
     }
 }
