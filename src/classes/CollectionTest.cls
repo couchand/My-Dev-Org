@@ -138,21 +138,6 @@
         );
     }
 
-    private static testMethod void testGroupingReducerTypes()
-    {
-        Collection.Reducer grouper = new Collection.GroupingReducer( new OddEvener() );
-
-        Test.startTest();
-
-            Type inputType = grouper.getInputType();
-            Type outputType = grouper.getOutputType();
-
-        Test.stopTest();
-
-        System.assertEquals( Integer.class, inputType );
-        System.assertEquals( Type.forName('Map<String, Integer>'), outputType );
-    }
-
     public class OddEvener implements Collection.Mapper
     {
         public Object doMap( Object input )

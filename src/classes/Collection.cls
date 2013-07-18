@@ -48,7 +48,21 @@ public class Collection
 
     public Map<Object, Collection> doGroup( Mapper mapper )
     {
-        Map<Object, List<Object>> reduced = (Map<Object, List<Object>>)doReduce( new GroupingReducer( mapper ), new Map<Object, List<Object>>() );
+        Map<Object, List<Object>> reduced = new Map<Object, List<Object>>();
+
+        for ( Object input : members )
+        {
+            Object key = mapper.doMap( input );
+
+            if ( reduced.containsKey( key ) )
+            {
+                reduced.get( key ).add( input );
+            }
+            else
+            {
+                reduced.put( key, new List<Object>{ input } );
+            }
+        }
 
         Map<Object, Collection> collections = new Map<Object, Collection>();
 
@@ -58,44 +72,6 @@ public class Collection
         }
 
         return collections;
-    }
-
-    public class GroupingReducer implements Reducer
-    {
-        Mapper mapper;
-
-        public GroupingReducer( Mapper mapper )
-        {
-            this.mapper = mapper;
-        }
-
-        public Object doReduce( Object input, Object current )
-        {
-            Map<Object, List<Object>> theMap = (Map<Object, List<Object>>)current;
-
-            Object key = mapper.doMap( input );
-
-            if ( theMap.containsKey( key ) )
-            {
-                theMap.get( key ).add( input );
-            }
-            else
-            {
-                theMap.put( key, new List<Object>{ input } );
-            }
-
-            return theMap;
-        }
-
-        public Type getInputType()
-        {
-            return mapper.getInputType();
-        }
-
-        public Type getOutputType()
-        {
-            return Type.forName('Map<' + mapper.getOutputType() + ',' + mapper.getInputType() + '>');
-        }
     }
 
     public void add( Object newObject )
