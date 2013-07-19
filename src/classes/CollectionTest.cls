@@ -107,11 +107,13 @@
 
             Integer functionalStart = Limits.getScriptStatements();
 
-            Map<Object, Collection> groups = values.doGroup( new OddEvener() );
+            Collection.GroupedCollection collection = values.doGroup( new OddEvener() );
 
             Integer functionalStop = Limits.getScriptStatements();
 
         Test.stopTest();
+
+        Map<Object, Collection> groups = collection.groups;
 
         System.assert( groups.containsKey( 'even' ) );
         System.assert( groups.containsKey( 'odd' ) );
@@ -138,6 +140,33 @@
         );
     }
 
+    private static testMethod void testGroupMethods()
+    {
+        Collection groups = values.doGroup( new OddEvener() );
+
+        Test.startTest();
+
+            Collection mappedCollection = groups.doMap( new OddEvener() );
+            Object count = groups.doReduce( new Counter() );
+
+        Test.stopTest();
+
+        System.assert( count instanceof Integer );
+        System.assertEquals( 2, count );
+
+        System.assert( mappedCollection instanceof Collection.GroupedCollection );
+
+        Collection.GroupedCollection mapped = (Collection.GroupedCollection)mappedCollection;
+
+        for ( Object key : mapped.groups.keySet() )
+        {
+            for ( Object value : mapped.groups.get( key ).members )
+            {
+                System.assertEquals( key, value );
+            }
+        }
+    }
+
     public class OddEvener implements Collection.Mapper
     {
         public Object doMap( Object input )
@@ -153,6 +182,25 @@
         public Type getOutputType()
         {
             return String.class;
+        }
+    }
+
+    public class Counter implements Collection.Reducer
+    {
+        public Object doReduce( Object input, Object current )
+        {
+            return ( input == null ? 0 : 1 ) +
+                   ( current == null ? 0 : (Integer)current );
+        }
+
+        public Type getInputType()
+        {
+            return Object.class;
+        }
+
+        public Type getOutputType()
+        {
+            return Integer.class;
         }
     }
 }

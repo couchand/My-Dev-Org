@@ -1,4 +1,4 @@
-public class Collection
+public virtual class Collection
 {
     public interface Mapper
     {
@@ -14,12 +14,17 @@ public class Collection
         Type getOutputType();
     }
 
+    public Collection()
+    {
+        this.members = new List<Object>();
+    }
+
     public Collection( List<Object> members )
     {
         this.members = members;
     }
 
-    public Collection doMap( Mapper mapper )
+    public virtual Collection doMap( Mapper mapper )
     {
         List<Object> accumulator = new List<Object>();
 
@@ -31,12 +36,12 @@ public class Collection
         return new Collection( accumulator );
     }
 
-    public Object doReduce( Reducer reducer )
+    public virtual Object doReduce( Reducer reducer )
     {
         return doReduce( reducer, null );
     }
 
-    public Object doReduce( Reducer reducer, Object initial )
+    public virtual Object doReduce( Reducer reducer, Object initial )
     {
         for ( Object member : members )
         {
@@ -46,7 +51,7 @@ public class Collection
         return initial;
     }
 
-    public Map<Object, Collection> doGroup( Mapper mapper )
+    public virtual GroupedCollection doGroup( Mapper mapper )
     {
         Map<Object, List<Object>> reduced = new Map<Object, List<Object>>();
 
@@ -71,13 +76,54 @@ public class Collection
             collections.put( key, new Collection( reduced.get( key ) ) );
         }
 
-        return collections;
-    }
-
-    public void add( Object newObject )
-    {
-        members.add( newObject );
+        return new GroupedCollection( collections );
     }
 
     @TestVisible private List<Object> members;
+
+    public virtual class GroupedCollection extends Collection
+    {
+        public GroupedCollection( Map<Object, Collection> groups )
+        {
+            this.groups = groups;
+        }
+
+        public virtual override Collection doMap( Mapper mapper )
+        {
+            Map<Object, Collection> returnMap = new Map<Object, Collection>();
+
+            for ( Object key : groups.keySet() )
+            {
+                returnMap.put( key, groups.get( key ).doMap( mapper ) );
+            }
+
+            return new GroupedCollection( returnMap );
+        }
+
+        public virtual override Object doReduce( Reducer reducer, Object initial )
+        {
+            Map<Object, Object> reduced = new Map<Object, Object>();
+
+            for ( Object key : groups.keySet() )
+            {
+                reduced.put( key, groups.get( key ).doReduce( reducer, initial ) );
+            }
+
+            return new Collection( reduced.values() ).doReduce( reducer, initial );
+        }
+
+        public virtual override GroupedCollection doGroup( Mapper mapper )
+        {
+            Map<Object, GroupedCollection> nested = new Map<Object, GroupedCollection>();
+
+            for ( Object key : groups.keySet() )
+            {
+                nested.put( key, groups.get( key ).doGroup( mapper ) );
+            }
+
+            return new GroupedCollection( nested );
+        }
+
+        @TestVisible private Map<Object, Collection> groups;
+    }
 }
