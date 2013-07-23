@@ -7,11 +7,63 @@ public virtual class Collection
         Type getOutputType();
     }
 
+    public abstract class IntegerMapper implements Mapper
+    {
+        public Type getInputType()
+        {
+            return Integer.class;
+        }
+
+        public Type getOutputType()
+        {
+            return Integer.class;
+        }
+    }
+
+    public abstract class DoubleMapper implements Mapper
+    {
+        public Type getInputType()
+        {
+            return Double.class;
+        }
+
+        public Type getOutputType()
+        {
+            return Double.class;
+        }
+    }
+
     public interface Reducer
     {
         Object doReduce( Object input, Object current );
         Type getInputType();
         Type getOutputType();
+    }
+
+    public abstract class IntegerReducer implements Reducer
+    {
+        public Type getInputType()
+        {
+            return Integer.class;
+        }
+
+        public Type getOutputType()
+        {
+            return Integer.class;
+        }
+    }
+
+    public abstract class DoubleReducer implements Reducer
+    {
+        public Type getInputType()
+        {
+            return Double.class;
+        }
+
+        public Type getOutputType()
+        {
+            return Double.class;
+        }
     }
 
     public Collection()
@@ -27,6 +79,11 @@ public virtual class Collection
     public Boolean isEmpty()
     {
         return members.isEmpty();
+    }
+
+    public Integer size()
+    {
+        return members.size();
     }
 
     public virtual Object shift()
@@ -47,6 +104,27 @@ public virtual class Collection
         }
 
         return new Collection( newMembers );
+    }
+
+    public virtual Collection removeIf( Mapper selector )
+    {
+        List<Object> ejected = new List<Object>();
+        List<Object> saved = new List<Object>();
+
+        for ( Object member : members )
+        {
+            if ( (Boolean)selector.doMap( member ) )
+            {
+                ejected.add( member );
+            }
+            else
+            {
+                saved.add( member );
+            }
+        }
+
+        members = saved;
+        return new Collection( ejected );
     }
 
     public virtual Collection doMap( Mapper mapper )

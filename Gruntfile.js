@@ -24,7 +24,7 @@ module.exports = function(grunt) {
         }
       },
       production: {
-        src: ['src/classes/Collection.cls', 'src/classes/CollectionTest.cls', 'src/classes/SieveOfErastosthenes.cls', 'src/classes/IndexOfMaximum.cls'],
+        src: ['src/classes/Collection.cls', 'src/classes/CollectionTest.cls', 'src/classes/SieveOfErastosthenes.cls', 'src/classes/IndexOfMaximum.cls','src/classes/ShannonEntropy.cls'],
         options: {
           credentials: 'creds/production.json'
         }
