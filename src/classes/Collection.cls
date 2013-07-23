@@ -24,6 +24,31 @@ public virtual class Collection
         this.members = members;
     }
 
+    public Boolean isEmpty()
+    {
+        return members.isEmpty();
+    }
+
+    public virtual Object shift()
+    {
+        return members.remove( 0 );
+    }
+
+    public virtual Collection doSelect( Mapper selector )
+    {
+        List<Object> newMembers = new List<Object>();
+
+        for ( Object member : members )
+        {
+            if ( (Boolean)selector.doMap( member ) )
+            {
+                newMembers.add( member );
+            }
+        }
+
+        return new Collection( newMembers );
+    }
+
     public virtual Collection doMap( Mapper mapper )
     {
         List<Object> accumulator = new List<Object>();
@@ -49,6 +74,21 @@ public virtual class Collection
         }
 
         return initial;
+    }
+
+    public static Collection doUnfold( Mapper mapper, Object initial )
+    {
+        List<Object> objects = new List<Object>();
+
+        Object next = mapper.doMap( initial );
+
+        while ( null != next )
+        {
+            objects.add( next );
+            next = mapper.doMap( initial  );
+        }
+
+        return new Collection( objects );
     }
 
     public virtual GroupedCollection doGroup( Mapper mapper )
