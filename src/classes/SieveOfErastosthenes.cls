@@ -3,12 +3,12 @@ private class SieveOfErastosthenes
 {
     private static testMethod void testSieve()
     {
-        Integer n = 10;
+        Integer n = 100;
         List<Integer> result = new List<Integer>();
         List<Integer> myA = new List<Integer>();
         List<Integer> primes = new List<Integer>();
 
-        Integer iterativeStart = Limits.getScriptStatements();
+        Benchmark iterative = new Benchmark();
 
         for ( Integer counter = 2; counter <= n; counter++ )
         {
@@ -34,11 +34,11 @@ private class SieveOfErastosthenes
             primes.add( p );
         }
 
-        Integer iterativeStop = Limits.getScriptStatements();
+        iterative.stop();
 
         Test.startTest();
 
-            Integer functionalStart = Limits.getScriptStatements();
+            Benchmark functional = new Benchmark();
 
             Collection.Mapper countFromTwo = new Unfolder.CountFrom( 2 );
             Collection a = Collection.doUnfold( countFromTwo, n );
@@ -54,7 +54,7 @@ private class SieveOfErastosthenes
                 result.add( p );
             }
 
-            Integer functionalStop = Limits.getScriptStatements();
+            functional.stop();
 
         Test.stopTest();
 
@@ -64,12 +64,8 @@ private class SieveOfErastosthenes
         }
 
         System.assert( false,
-            'iterative ' +
-            (iterativeStop - iterativeStart) + ' statements ' +
-            '[' + iterativeStart + ',' + iterativeStop + '] ' +
-            'functional ' +
-            (functionalStop - functionalStart) + ' statements ' +
-            '[' + functionalStart + ',' +functionalStop + ']'
+            'iterative ' + iterative.getNetUsage('ScriptStatements') + ' statements ' +
+            'functional ' + functional.getNetUsage('ScriptStatements') + ' statements '
         );
     }
 }

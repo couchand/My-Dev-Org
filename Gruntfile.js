@@ -25,6 +25,7 @@ module.exports = function(grunt) {
       },
       production: {
         src: [
+            'src/classes/Benchmark.cls',
             'src/classes/Collection.cls',
             'src/classes/CollectionTest.cls',
             'src/classes/Mapper.cls',

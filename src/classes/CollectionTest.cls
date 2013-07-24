@@ -5,7 +5,7 @@
 
     private static testMethod void testFor()
     {
-        Integer iterativeStart = Limits.getScriptStatements();
+        Benchmark iterative = new Benchmark();
 
         Integer expectedTotal = 0;
 
@@ -14,16 +14,16 @@
             expectedTotal += input * input;
         }
 
-        Integer iterativeStop = Limits.getScriptStatements();
+        iterative.stop();
 
         Test.startTest();
 
-            Integer functionalStart = Limits.getScriptStatements();
+            Benchmark functional = new Benchmark();
 
             Collection squared = values.doMap( new Mapper.SquareInteger() );
             Object totalObj = squared.doReduce( new Reducer.SumInteger() );
 
-            Integer functionalStop = Limits.getScriptStatements();
+            functional.stop();
 
         Test.stopTest();
 
@@ -34,18 +34,14 @@
         System.assertEquals( expectedTotal, actualTotal );
 
         System.assert( false,
-            'iterative ' +
-            (iterativeStop - iterativeStart) + ' statements ' +
-            '[' + iterativeStart + ',' + iterativeStop + '] ' +
-            'functional ' +
-            (functionalStop - functionalStart) + ' statements ' +
-            '[' + functionalStart + ',' +functionalStop + ']'
+            'iterative ' + iterative.getNetUsage('ScriptStatements') + ' statements ' +
+            'functional ' + functional.getNetUsage('ScriptStatements') + ' statements '
         );
     }
 
     private static testMethod void testGroup()
     {
-        Integer iterativeStart = Limits.getScriptStatements();
+        Benchmark iterative = new Benchmark();
 
         Set<Integer> odds = new Set<Integer>();
         Set<Integer> evens = new Set<Integer>();
@@ -62,15 +58,15 @@
             }
         }
 
-        Integer iterativeStop = Limits.getScriptStatements();
+        iterative.stop();
 
         Test.startTest();
 
-            Integer functionalStart = Limits.getScriptStatements();
+            Benchmark functional = new Benchmark();
 
             Collection.GroupedCollection collection = values.doGroup( new Mapper.OddOrEven() );
 
-            Integer functionalStop = Limits.getScriptStatements();
+            functional.stop();
 
         Test.stopTest();
 
@@ -92,12 +88,8 @@
         }
 
         System.assert( false,
-            'iterative ' +
-            (iterativeStop - iterativeStart) + ' statements ' +
-            '[' + iterativeStart + ',' + iterativeStop + '] ' +
-            'functional ' +
-            (functionalStop - functionalStart) + ' statements ' +
-            '[' + functionalStart + ',' +functionalStop + ']'
+            'iterative ' + iterative.getNetUsage('ScriptStatements') + ' statements ' +
+            'functional ' + functional.getNetUsage('ScriptStatements') + ' statements '
         );
     }
 
