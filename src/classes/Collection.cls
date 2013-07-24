@@ -178,6 +178,23 @@ global virtual class Collection
             return new Collection( reduced.values() ).doReduce( reducer, initial );
         }
 
+        global virtual Map<Object, Object> doReduceGroups( Reducer reducer )
+        {
+            return doReduceGroups( reducer, null );
+        }
+
+        global virtual Map<Object, Object> doReduceGroups( Reducer reducer, Object initial )
+        {
+            Map<Object, Object> dictionary = new Map<Object, Object>();
+
+            for ( Object key : groups.keySet() )
+            {
+                dictionary.put( key, groups.get( key ).doReduce( reducer, initial ) );
+            }
+
+            return dictionary;
+        }
+
         global virtual override GroupedCollection doGroup( Mapper mapper )
         {
             Map<Object, GroupedCollection> nested = new Map<Object, GroupedCollection>();

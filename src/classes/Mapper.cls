@@ -64,6 +64,14 @@ global class Mapper
         }
     }
 
+    global class IntegerIdentity extends IntegerMapper
+    {
+        global Object doMap( Object input )
+        {
+            return input;
+        }
+    }
+
     global abstract class IntegerMapper implements Collection.Mapper
     {
         global Type getInputType()
@@ -74,6 +82,31 @@ global class Mapper
         global Type getOutputType()
         {
             return Integer.class;
+        }
+    }
+
+    global class MapMapper implements Collection.Mapper
+    {
+        @TestVisible Map<Object, Object> dictionary;
+
+        global MapMapper( Map<Object, Object> dictionary )
+        {
+            this.dictionary = dictionary;
+        }
+
+        global Object doMap( Object input )
+        {
+            return dictionary.get( input );
+        }
+
+        global Type getInputType()
+        {
+            return Object.class;
+        }
+
+        global Type getOutputType()
+        {
+            return Object.class;
         }
     }
 }
