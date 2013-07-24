@@ -7,32 +7,6 @@ public virtual class Collection
         Type getOutputType();
     }
 
-    public abstract class IntegerMapper implements Mapper
-    {
-        public Type getInputType()
-        {
-            return Integer.class;
-        }
-
-        public Type getOutputType()
-        {
-            return Integer.class;
-        }
-    }
-
-    public abstract class DoubleMapper implements Mapper
-    {
-        public Type getInputType()
-        {
-            return Double.class;
-        }
-
-        public Type getOutputType()
-        {
-            return Double.class;
-        }
-    }
-
     public interface Reducer
     {
         Object doReduce( Object input, Object current );

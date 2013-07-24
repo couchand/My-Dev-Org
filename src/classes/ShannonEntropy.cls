@@ -17,9 +17,9 @@ private class ShannonEntropy
         Collection a = new Collection( values );
 
         Integer len = a.size();
-        Collection.Mapper valueCounts = new ValueCountUnfolder();
-        Collection.Mapper divideByLen = new DivideByMapper( len );
-        Collection.Mapper multiplyByLog = new MultiplyByLogMapper();
+        Collection.Mapper valueCounts = new Unfolder.ValueCount();
+        Collection.Mapper divideByLen = new Mapper.DivideBy( len );
+        Collection.Mapper multiplyByLog = new Mapper.MultiplyByLog();
         Collection.Reducer sum = new SumReducer();
 
         Test.startTest();
@@ -32,62 +32,6 @@ private class ShannonEntropy
         Test.stopTest();
 
         assertDelta( 0.6, entropy, 0.005 );
-    }
-
-    public class ValueCountUnfolder extends Collection.IntegerMapper
-    {
-        public Object doMap( Object input )
-        {
-            Collection values = (Collection)input;
-
-            if ( values.isEmpty() )
-            {
-                return null;
-            }
-
-            Integer first = (Integer)values.shift();
-            Collection.Mapper areTheFirst = new EqualsSelector( first );
-
-            return 1 + values.removeIf( areTheFirst ).size();
-        }
-    }
-
-    public class EqualsSelector extends Collection.IntegerMapper
-    {
-        Integer find;
-
-        public EqualsSelector( Integer find )
-        {
-            this.find = find;
-        }
-
-        public Object doMap( Object input )
-        {
-            return find == (Integer)input;
-        }
-    }
-
-    public class DivideByMapper extends Collection.DoubleMapper
-    {
-        Double divisor;
-
-        public DivideByMapper( Double divisor )
-        {
-            this.divisor = divisor;
-        }
-
-        public Object doMap( Object input )
-        {
-            return ((Double)input) / divisor;
-        }
-    }
-
-    public class MultiplyByLogMapper extends Collection.DoubleMapper
-    {
-        public Object doMap( Object input )
-        {
-            return ((Double)input) * Math.log10( (Double)input );
-        }
     }
 
     public class SumReducer extends Collection.DoubleReducer

@@ -1,64 +1,10 @@
 @isTest
 private class SieveOfErastosthenes
 {
-    public class CountFromMapper implements Collection.Mapper
-    {
-        Integer count;
-
-        public CountFromMapper( Integer min )
-        {
-            count = min;
-        }
-
-        public Object doMap( Object input )
-        {
-            if ( count > (Integer)input )
-            {
-                return null;
-            }
-            return count++;
-        }
-
-        public Type getInputType()
-        {
-            return Integer.class;
-        }
-
-        public Type getOutputType()
-        {
-            return Integer.class;
-        }
-    }
-
-    public class NotDivisibleSelector implements Collection.Mapper
-    {
-        Integer mod;
-
-        public NotDivisibleSelector( Integer mod )
-        {
-            this.mod = mod;
-        }
-
-        public Object doMap( Object input )
-        {
-            return 0 != Math.mod( (Integer)input, mod );
-        }
-
-        public Type getInputType()
-        {
-            return Integer.class;
-        }
-
-        public Type getOutputType()
-        {
-            return Boolean.class;
-        }
-    }
-
     private static testMethod void testSieve()
     {
         Integer n = 10;
-        Collection.Mapper countFromTwo = new CountFromMapper( 2 );
+        Collection.Mapper countFromTwo = new Unfolder.CountFrom( 2 );
         Collection a = Collection.doUnfold( countFromTwo, n );
         List<Integer> result = new List<Integer>();
 
@@ -68,7 +14,7 @@ private class SieveOfErastosthenes
             {
                 Integer p = (Integer)a.shift();
 
-                Collection.Mapper selectModP = new NotDivisibleSelector( p );
+                Collection.Mapper selectModP = new Selector.NotDivisibleBy( p );
 
                 a = a.doSelect( selectModP );
 
