@@ -14,7 +14,6 @@ global virtual class Collection
         Type getOutputType();
     }
 
-
     global Collection()
     {
         this.members = new List<Object>();
