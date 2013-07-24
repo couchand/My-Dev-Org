@@ -4,20 +4,20 @@ global class Mapper
     {
         Double divisor;
 
-        public DivideBy( Double divisor )
+        global DivideBy( Double divisor )
         {
             this.divisor = divisor;
         }
 
-        public Object doMap( Object input )
+        global Object doMap( Object input )
         {
             return ((Double)input) / divisor;
         }
     }
 
-    public class SquareInteger extends IntegerMapper
+    global class SquareInteger extends IntegerMapper
     {
-        public Object doMap( Object input )
+        global Object doMap( Object input )
         {
             Integer value = input == null ? 0 : (Integer)input;
 
@@ -25,19 +25,19 @@ global class Mapper
         }
     }
 
-    public class OddOrEven implements Collection.Mapper
+    global class OddOrEven implements Collection.Mapper
     {
-        public Object doMap( Object input )
+        global Object doMap( Object input )
         {
             return Math.mod( (Integer)input, 2 ) == 0 ? 'even' : 'odd';
         }
 
-        public Type getInputType()
+        global Type getInputType()
         {
             return Integer.class;
         }
 
-        public Type getOutputType()
+        global Type getOutputType()
         {
             return String.class;
         }
@@ -45,7 +45,7 @@ global class Mapper
 
     global class MultiplyByLog extends DoubleMapper
     {
-        public Object doMap( Object input )
+        global Object doMap( Object input )
         {
             return ((Double)input) * Math.log10( (Double)input );
         }
@@ -53,25 +53,25 @@ global class Mapper
 
     global abstract class DoubleMapper implements Collection.Mapper
     {
-        public Type getInputType()
+        global Type getInputType()
         {
             return Double.class;
         }
 
-        public Type getOutputType()
+        global Type getOutputType()
         {
             return Double.class;
         }
     }
 
-    public abstract class IntegerMapper implements Collection.Mapper
+    global abstract class IntegerMapper implements Collection.Mapper
     {
-        public Type getInputType()
+        global Type getInputType()
         {
             return Integer.class;
         }
 
-        public Type getOutputType()
+        global Type getOutputType()
         {
             return Integer.class;
         }

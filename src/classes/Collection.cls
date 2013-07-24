@@ -1,13 +1,13 @@
-public virtual class Collection
+global virtual class Collection
 {
-    public interface Mapper
+    global interface Mapper
     {
         Object doMap( Object input );
         Type getInputType();
         Type getOutputType();
     }
 
-    public interface Reducer
+    global interface Reducer
     {
         Object doReduce( Object input, Object current );
         Type getInputType();
@@ -15,32 +15,32 @@ public virtual class Collection
     }
 
 
-    public Collection()
+    global Collection()
     {
         this.members = new List<Object>();
     }
 
-    public Collection( List<Object> members )
+    global Collection( List<Object> members )
     {
         this.members = members;
     }
 
-    public Boolean isEmpty()
+    global Boolean isEmpty()
     {
         return members.isEmpty();
     }
 
-    public Integer size()
+    global Integer size()
     {
         return members.size();
     }
 
-    public virtual Object shift()
+    global virtual Object shift()
     {
         return members.remove( 0 );
     }
 
-    public virtual Collection doSelect( Mapper selector )
+    global virtual Collection doSelect( Mapper selector )
     {
         List<Object> newMembers = new List<Object>();
 
@@ -55,7 +55,7 @@ public virtual class Collection
         return new Collection( newMembers );
     }
 
-    public virtual Collection removeIf( Mapper selector )
+    global virtual Collection removeIf( Mapper selector )
     {
         List<Object> ejected = new List<Object>();
         List<Object> saved = new List<Object>();
@@ -76,7 +76,7 @@ public virtual class Collection
         return new Collection( ejected );
     }
 
-    public virtual Collection doMap( Mapper mapper )
+    global virtual Collection doMap( Mapper mapper )
     {
         List<Object> accumulator = new List<Object>();
 
@@ -88,12 +88,12 @@ public virtual class Collection
         return new Collection( accumulator );
     }
 
-    public virtual Object doReduce( Reducer reducer )
+    global virtual Object doReduce( Reducer reducer )
     {
         return doReduce( reducer, null );
     }
 
-    public virtual Object doReduce( Reducer reducer, Object initial )
+    global virtual Object doReduce( Reducer reducer, Object initial )
     {
         for ( Object member : members )
         {
@@ -103,7 +103,7 @@ public virtual class Collection
         return initial;
     }
 
-    public static Collection doUnfold( Mapper mapper, Object initial )
+    global static Collection doUnfold( Mapper mapper, Object initial )
     {
         List<Object> objects = new List<Object>();
 
@@ -118,7 +118,7 @@ public virtual class Collection
         return new Collection( objects );
     }
 
-    public virtual GroupedCollection doGroup( Mapper mapper )
+    global virtual GroupedCollection doGroup( Mapper mapper )
     {
         Map<Object, List<Object>> reduced = new Map<Object, List<Object>>();
 
@@ -148,14 +148,14 @@ public virtual class Collection
 
     @TestVisible private List<Object> members;
 
-    public virtual class GroupedCollection extends Collection
+    global virtual class GroupedCollection extends Collection
     {
-        public GroupedCollection( Map<Object, Collection> groups )
+        global GroupedCollection( Map<Object, Collection> groups )
         {
             this.groups = groups;
         }
 
-        public virtual override Collection doMap( Mapper mapper )
+        global virtual override Collection doMap( Mapper mapper )
         {
             Map<Object, Collection> returnMap = new Map<Object, Collection>();
 
@@ -167,7 +167,7 @@ public virtual class Collection
             return new GroupedCollection( returnMap );
         }
 
-        public virtual override Object doReduce( Reducer reducer, Object initial )
+        global virtual override Object doReduce( Reducer reducer, Object initial )
         {
             Map<Object, Object> reduced = new Map<Object, Object>();
 
@@ -179,7 +179,7 @@ public virtual class Collection
             return new Collection( reduced.values() ).doReduce( reducer, initial );
         }
 
-        public virtual override GroupedCollection doGroup( Mapper mapper )
+        global virtual override GroupedCollection doGroup( Mapper mapper )
         {
             Map<Object, GroupedCollection> nested = new Map<Object, GroupedCollection>();
 

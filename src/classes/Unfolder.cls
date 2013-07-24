@@ -1,8 +1,8 @@
 global class Unfolder
 {
-    public class ValueCount extends Mapper.IntegerMapper
+    global class ValueCount extends Mapper.IntegerMapper
     {
-        public Object doMap( Object input )
+        global Object doMap( Object input )
         {
             Collection values = (Collection)input;
 
@@ -18,16 +18,16 @@ global class Unfolder
         }
     }
 
-    public class CountFrom extends Mapper.IntegerMapper
+    global class CountFrom extends Mapper.IntegerMapper
     {
         Integer count;
 
-        public CountFrom( Integer min )
+        global CountFrom( Integer min )
         {
             count = min;
         }
 
-        public Object doMap( Object input )
+        global Object doMap( Object input )
         {
             if ( count > (Integer)input )
             {
