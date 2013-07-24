@@ -19,7 +19,7 @@ global class Benchmark
         return factor == 'ScriptStatements' ? usage - 2 : usage;
     }
 
-    global Set<String> getFactors()
+    global static Set<String> getFactors()
     {
         return new Set<String>
         {
@@ -46,7 +46,7 @@ global class Benchmark
         };
     }
 
-    global Map<String, Integer> getLimits()
+    global static Map<String, Integer> getLimits()
     {
         return new Map<String, Integer>
         {
@@ -54,22 +54,22 @@ global class Benchmark
             'Callouts'                      => Limits.getCallouts(),
             'ChildRelationshipsDescribes'   => Limits.getChildRelationshipsDescribes(),
             'CpuTime'                       => Limits.getCpuTime(),
-    		'DMLRows'		                => Limits.getDMLRows(),
-    		'DMLStatements'		            => Limits.getDMLStatements(),
-    		'EmailInvocations'		        => Limits.getEmailInvocations(),
-    		'FieldsDescribes'		        => Limits.getFieldsDescribes(),
-    		'FieldSetsDescribes'            => Limits.getFieldSetsDescribes(),
-    		'FindSimilarCalls'		        => Limits.getFindSimilarCalls(),
-    		'FutureCalls'		            => Limits.getFutureCalls(),
-    		'HeapSize'		                => Limits.getHeapSize(),
-    		'InteractionQueries'		    => Limits.getInteractionQueries(),
-    		'Queries'		                => Limits.getQueries(),
-    		'PicklistDescribes'		        => Limits.getPicklistDescribes(),
-    		'QueryLocatorRows'		        => Limits.getQueryLocatorRows(),
-    		'QueryRows'		                => Limits.getQueryRows(),
-    		'RecordTypesDescribes'		    => Limits.getRecordTypesDescribes(),
-    		'ScriptStatements'		        => Limits.getScriptStatements(),
-    		'SoslQueries'		            => Limits.getSoslQueries()
+            'DMLRows'                       => Limits.getDMLRows(),
+            'DMLStatements'                 => Limits.getDMLStatements(),
+            'EmailInvocations'              => Limits.getEmailInvocations(),
+            'FieldsDescribes'               => Limits.getFieldsDescribes(),
+            'FieldSetsDescribes'            => Limits.getFieldSetsDescribes(),
+            'FindSimilarCalls'              => Limits.getFindSimilarCalls(),
+            'FutureCalls'                   => Limits.getFutureCalls(),
+            'HeapSize'                      => Limits.getHeapSize(),
+            'InteractionQueries'            => Limits.getInteractionQueries(),
+            'Queries'                       => Limits.getQueries(),
+            'PicklistDescribes'             => Limits.getPicklistDescribes(),
+            'QueryLocatorRows'              => Limits.getQueryLocatorRows(),
+            'QueryRows'                     => Limits.getQueryRows(),
+            'RecordTypesDescribes'          => Limits.getRecordTypesDescribes(),
+            'ScriptStatements'              => Limits.getScriptStatements(),
+            'SoslQueries'                   => Limits.getSoslQueries()
         };
     }
 }
