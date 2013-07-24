@@ -3,7 +3,7 @@ global class Benchmark
     @TestVisible Map<String, Integer> factorsStart;
     @TestVisible Map<String, Integer> factorsEnd;
 
-    global Benchmark()
+    global void start()
     {
         factorsStart = getLimits();
     }

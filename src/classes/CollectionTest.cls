@@ -6,6 +6,9 @@
     private static testMethod void testFor()
     {
         Benchmark iterative = new Benchmark();
+        Benchmark functional = new Benchmark();
+
+        iterative.start();
 
         Integer expectedTotal = 0;
 
@@ -18,7 +21,7 @@
 
         Test.startTest();
 
-            Benchmark functional = new Benchmark();
+            functional.start();
 
             Collection squared = values.doMap( new Mapper.SquareInteger() );
             Object totalObj = squared.doReduce( new Reducer.SumInteger() );
@@ -44,6 +47,9 @@
     private static testMethod void testGroup()
     {
         Benchmark iterative = new Benchmark();
+        Benchmark functional = new Benchmark();
+
+        iterative.start();
 
         Set<Integer> odds = new Set<Integer>();
         Set<Integer> evens = new Set<Integer>();
@@ -64,7 +70,7 @@
 
         Test.startTest();
 
-            Benchmark functional = new Benchmark();
+            functional.start();
 
             Collection.GroupedCollection collection = values.doGroup( new Mapper.OddOrEven() );
 

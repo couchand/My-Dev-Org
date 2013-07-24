@@ -6,6 +6,9 @@ private class SieveOfErastosthenes
         Integer n = 100;
 
         Benchmark iterative = new Benchmark();
+        Benchmark functional = new Benchmark();
+
+        iterative.start();
 
         List<Integer> myA = new List<Integer>();
         List<Integer> primes = new List<Integer>();
@@ -37,7 +40,7 @@ private class SieveOfErastosthenes
 
         Test.startTest();
 
-            Benchmark functional = new Benchmark();
+            functional.start();
 
             List<Integer> result = new List<Integer>();
 
