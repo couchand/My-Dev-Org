@@ -20,7 +20,7 @@
 
             Integer functionalStart = Limits.getScriptStatements();
 
-            Collection squared = values.doMap( new Squarer() );
+            Collection squared = values.doMap( new Mapper.SquareInteger() );
             Object totalObj = squared.doReduce( new Reducer.SumInteger() );
 
             Integer functionalStop = Limits.getScriptStatements();
@@ -41,26 +41,6 @@
             (functionalStop - functionalStart) + ' statements ' +
             '[' + functionalStart + ',' +functionalStop + ']'
         );
-    }
-
-    public class Squarer implements Collection.Mapper
-    {
-        public Object doMap( Object input )
-        {
-            Integer value = input == null ? 0 : (Integer)input;
-
-            return value * value;
-        }
-
-        public Type getInputType()
-        {
-            return Integer.class;
-        }
-
-        public Type getOutputType()
-        {
-            return Integer.class;
-        }
     }
 
     private static testMethod void testGroup()
@@ -88,7 +68,7 @@
 
             Integer functionalStart = Limits.getScriptStatements();
 
-            Collection.GroupedCollection collection = values.doGroup( new OddEvener() );
+            Collection.GroupedCollection collection = values.doGroup( new Mapper.OddOrEven() );
 
             Integer functionalStop = Limits.getScriptStatements();
 
@@ -123,11 +103,11 @@
 
     private static testMethod void testGroupMethods()
     {
-        Collection groups = values.doGroup( new OddEvener() );
+        Collection groups = values.doGroup( new Mapper.OddOrEven() );
 
         Test.startTest();
 
-            Collection mappedCollection = groups.doMap( new OddEvener() );
+            Collection mappedCollection = groups.doMap( new Mapper.OddOrEven() );
             Object count = groups.doReduce( new Reducer.Count() );
 
         Test.stopTest();
@@ -145,24 +125,6 @@
             {
                 System.assertEquals( key, value );
             }
-        }
-    }
-
-    public class OddEvener implements Collection.Mapper
-    {
-        public Object doMap( Object input )
-        {
-            return Math.mod( (Integer)input, 2 ) == 0 ? 'even' : 'odd';
-        }
-
-        public Type getInputType()
-        {
-            return Integer.class;
-        }
-
-        public Type getOutputType()
-        {
-            return String.class;
         }
     }
 }
