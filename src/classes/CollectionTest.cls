@@ -33,9 +33,11 @@
 
         System.assertEquals( expectedTotal, actualTotal );
 
-        System.assert( false,
+        System.assert( false, '\nMapReduce:\n' +
             'iterative ' + iterative.getNetUsage('ScriptStatements') + ' statements ' +
-            'functional ' + functional.getNetUsage('ScriptStatements') + ' statements '
+                         + iterative.getNetUsage('HeapSize') + ' heap ' + '\n' +
+            'functional ' + functional.getNetUsage('ScriptStatements') + ' statements ' +
+                          + functional.getNetUsage('HeapSize') + ' heap '
         );
     }
 
@@ -87,9 +89,11 @@
             System.assert( odds.contains( (Integer)value ) );
         }
 
-        System.assert( false,
+        System.assert( false, '\nGroup:\n' +
             'iterative ' + iterative.getNetUsage('ScriptStatements') + ' statements ' +
-            'functional ' + functional.getNetUsage('ScriptStatements') + ' statements '
+                         + iterative.getNetUsage('HeapSize') + ' heap ' + '\n' +
+            'functional ' + functional.getNetUsage('ScriptStatements') + ' statements ' +
+                          + functional.getNetUsage('HeapSize') + ' heap '
         );
     }
 

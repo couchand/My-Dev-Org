@@ -4,12 +4,11 @@ private class SieveOfErastosthenes
     private static testMethod void testSieve()
     {
         Integer n = 100;
-        List<Integer> result = new List<Integer>();
-        List<Integer> myA = new List<Integer>();
-        List<Integer> primes = new List<Integer>();
 
         Benchmark iterative = new Benchmark();
 
+        List<Integer> myA = new List<Integer>();
+        List<Integer> primes = new List<Integer>();
         for ( Integer counter = 2; counter <= n; counter++ )
         {
             myA.add( counter );
@@ -40,6 +39,8 @@ private class SieveOfErastosthenes
 
             Benchmark functional = new Benchmark();
 
+            List<Integer> result = new List<Integer>();
+
             Collection.Mapper countFromTwo = new Unfolder.CountFrom( 2 );
             Collection a = Collection.doUnfold( countFromTwo, n );
 
@@ -63,9 +64,11 @@ private class SieveOfErastosthenes
             System.assertEquals( primes[i], result[i], '' + result );
         }
 
-        System.assert( false,
+        System.assert( false, '\nSieve:\n' +
             'iterative ' + iterative.getNetUsage('ScriptStatements') + ' statements ' +
-            'functional ' + functional.getNetUsage('ScriptStatements') + ' statements '
+                         + iterative.getNetUsage('HeapSize') + ' heap ' + '\n' +
+            'functional ' + functional.getNetUsage('ScriptStatements') + ' statements ' +
+                          + functional.getNetUsage('HeapSize') + ' heap '
         );
     }
 }
