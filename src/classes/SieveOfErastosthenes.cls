@@ -4,11 +4,44 @@ private class SieveOfErastosthenes
     private static testMethod void testSieve()
     {
         Integer n = 10;
-        Collection.Mapper countFromTwo = new Unfolder.CountFrom( 2 );
-        Collection a = Collection.doUnfold( countFromTwo, n );
         List<Integer> result = new List<Integer>();
+        List<Integer> myA = new List<Integer>();
+        List<Integer> primes = new List<Integer>();
+
+        Integer iterativeStart = Limits.getScriptStatements();
+
+        for ( Integer counter = 2; counter <= n; counter++ )
+        {
+            myA.add( counter );
+        }
+
+        while ( !myA.isEmpty() )
+        {
+            Integer p = myA.remove(0);
+
+            List<Integer> newA = new List<Integer>();
+
+            for ( Integer value : myA )
+            {
+                if ( Math.mod( value, p ) != 0 )
+                {
+                    newA.add( value );
+                }
+            }
+
+            myA = newA;
+
+            primes.add( p );
+        }
+
+        Integer iterativeStop = Limits.getScriptStatements();
 
         Test.startTest();
+
+            Integer functionalStart = Limits.getScriptStatements();
+
+            Collection.Mapper countFromTwo = new Unfolder.CountFrom( 2 );
+            Collection a = Collection.doUnfold( countFromTwo, n );
 
             while ( !a.isEmpty() )
             {
@@ -21,13 +54,22 @@ private class SieveOfErastosthenes
                 result.add( p );
             }
 
-        Test.stopTest();
+            Integer functionalStop = Limits.getScriptStatements();
 
-        List<Integer> primes = new List<Integer>{ 2, 3, 5, 7 };
+        Test.stopTest();
 
         for ( Integer i = 0; i < primes.size(); i++  )
         {
             System.assertEquals( primes[i], result[i], '' + result );
         }
+
+        System.assert( false,
+            'iterative ' +
+            (iterativeStop - iterativeStart) + ' statements ' +
+            '[' + iterativeStart + ',' + iterativeStop + '] ' +
+            'functional ' +
+            (functionalStop - functionalStart) + ' statements ' +
+            '[' + functionalStart + ',' +functionalStop + ']'
+        );
     }
 }
