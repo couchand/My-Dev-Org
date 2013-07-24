@@ -1,7 +1,7 @@
 global class Benchmark
 {
-    Map<String, Integer> factorsStart;
-    Map<String, Integer> factorsEnd;
+    @TestVisible Map<String, Integer> factorsStart;
+    @TestVisible Map<String, Integer> factorsEnd;
 
     global Benchmark()
     {
@@ -17,6 +17,33 @@ global class Benchmark
     {
         Integer usage = factorsEnd.get( factor ) - factorsStart.get( factor );
         return factor == 'ScriptStatements' ? usage - 2 : usage;
+    }
+
+    global Set<String> getFactors()
+    {
+        return new Set<String>
+        {
+            'AggregateQueries',
+            'Callouts',
+            'ChildRelationshipsDescribes',
+            'CpuTime',
+            'DMLRows',
+            'DMLStatements',
+            'EmailInvocations',
+            'FieldsDescribes',
+            'FieldSetsDescribes',
+            'FindSimilarCalls',
+            'FutureCalls',
+            'HeapSize',
+            'InteractionQueries',
+            'Queries',
+            'PicklistDescribes',
+            'QueryLocatorRows',
+            'QueryRows',
+            'RecordTypesDescribes',
+            'ScriptStatements',
+            'SoslQueries'
+        };
     }
 
     global Map<String, Integer> getLimits()
