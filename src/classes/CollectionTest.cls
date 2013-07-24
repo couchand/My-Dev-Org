@@ -21,7 +21,7 @@
             Integer functionalStart = Limits.getScriptStatements();
 
             Collection squared = values.doMap( new Squarer() );
-            Object totalObj = squared.doReduce( new Summer() );
+            Object totalObj = squared.doReduce( new Reducer.SumInteger() );
 
             Integer functionalStop = Limits.getScriptStatements();
 
@@ -50,25 +50,6 @@
             Integer value = input == null ? 0 : (Integer)input;
 
             return value * value;
-        }
-
-        public Type getInputType()
-        {
-            return Integer.class;
-        }
-
-        public Type getOutputType()
-        {
-            return Integer.class;
-        }
-    }
-
-    public class Summer implements Collection.Reducer
-    {
-        public Object doReduce( Object input, Object current )
-        {
-            return ( input == null ? 0 : (Integer)input ) +
-                   ( current == null ? 0 : (Integer)current );
         }
 
         public Type getInputType()
@@ -147,7 +128,7 @@
         Test.startTest();
 
             Collection mappedCollection = groups.doMap( new OddEvener() );
-            Object count = groups.doReduce( new Counter() );
+            Object count = groups.doReduce( new Reducer.Count() );
 
         Test.stopTest();
 
@@ -182,25 +163,6 @@
         public Type getOutputType()
         {
             return String.class;
-        }
-    }
-
-    public class Counter implements Collection.Reducer
-    {
-        public Object doReduce( Object input, Object current )
-        {
-            return ( input == null ? 0 : 1 ) +
-                   ( current == null ? 0 : (Integer)current );
-        }
-
-        public Type getInputType()
-        {
-            return Object.class;
-        }
-
-        public Type getOutputType()
-        {
-            return Integer.class;
         }
     }
 }

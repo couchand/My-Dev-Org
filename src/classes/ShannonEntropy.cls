@@ -20,7 +20,7 @@ private class ShannonEntropy
         Collection.Mapper valueCounts = new Unfolder.ValueCount();
         Collection.Mapper divideByLen = new Mapper.DivideBy( len );
         Collection.Mapper multiplyByLog = new Mapper.MultiplyByLog();
-        Collection.Reducer sum = new SumReducer();
+        Collection.Reducer sum = new Reducer.SumDouble();
 
         Test.startTest();
 
@@ -32,17 +32,5 @@ private class ShannonEntropy
         Test.stopTest();
 
         assertDelta( 0.6, entropy, 0.005 );
-    }
-
-    public class SumReducer extends Collection.DoubleReducer
-    {
-        public Object doReduce( Object input, Object current )
-        {
-            if ( current == null )
-            {
-                return input;
-            }
-            return ((Double)input) + ((Double)current);
-        }
     }
 }

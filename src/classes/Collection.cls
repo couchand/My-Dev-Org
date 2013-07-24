@@ -14,31 +14,6 @@ public virtual class Collection
         Type getOutputType();
     }
 
-    public abstract class IntegerReducer implements Reducer
-    {
-        public Type getInputType()
-        {
-            return Integer.class;
-        }
-
-        public Type getOutputType()
-        {
-            return Integer.class;
-        }
-    }
-
-    public abstract class DoubleReducer implements Reducer
-    {
-        public Type getInputType()
-        {
-            return Double.class;
-        }
-
-        public Type getOutputType()
-        {
-            return Double.class;
-        }
-    }
 
     public Collection()
     {

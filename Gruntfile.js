@@ -28,6 +28,7 @@ module.exports = function(grunt) {
             'src/classes/Collection.cls',
             'src/classes/CollectionTest.cls',
             'src/classes/Mapper.cls',
+            'src/classes/Reducer.cls',
             'src/classes/Selector.cls',
             'src/classes/Unfolder.cls',
             'src/classes/SieveOfErastosthenes.cls',
