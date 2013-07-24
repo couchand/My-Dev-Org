@@ -15,7 +15,8 @@ global class Benchmark
 
     global Integer getNetUsage( String factor )
     {
-        return factorsEnd.get( factor ) - factorsStart.get( factor );
+        Integer usage = factorsEnd.get( factor ) - factorsStart.get( factor );
+        return factor == 'ScriptStatements' ? usage - 2 : usage;
     }
 
     global Map<String, Integer> getLimits()
