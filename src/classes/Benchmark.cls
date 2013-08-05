@@ -23,6 +23,9 @@ global class Benchmark
     {
         return new Set<String>
         {
+            'RunTime',
+
+            // Governor limits
             'AggregateQueries',
             'Callouts',
             'ChildRelationshipsDescribes',
@@ -50,6 +53,7 @@ global class Benchmark
     {
         return new Map<String, Integer>
         {
+            'RunTime'                       => (Integer)DateTime.now().getTime(),
             'AggregateQueries'              => Limits.getAggregateQueries(),
             'Callouts'                      => Limits.getCallouts(),
             'ChildRelationshipsDescribes'   => Limits.getChildRelationshipsDescribes(),
