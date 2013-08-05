@@ -49,15 +49,15 @@ module.exports = function(grunt) {
   // Some convinience handlers
   grunt.registerTask('validate', ['force:production:validate']);
   grunt.registerTask('deploy', ['force:production:deploy']);
-  grunt.registerTask('runTests', ['force:production:test']);
+  grunt.registerTask('test', ['force:production:test']);
 
-  grunt.registerTask('push', ['force:staging:deploy']);
-  grunt.registerTask('test', ['force:staging:test'])
+  //grunt.registerTask('push', ['force:staging:deploy']);
+  //grunt.registerTask('test', ['force:staging:test'])
 
-  grunt.registerTask('listSObjects', ['force:staging:get:sobjects']);
-  grunt.registerTask('getLeads', ['force:staging:get:query?q=select+id,name+from+lead']);
+  grunt.registerTask('listSObjects', ['force:production:get:sobjects']);
+  grunt.registerTask('getLeads', ['force:production:get:query?q=select+id,name+from+lead']);
 
   // By default, push and run all tests.
-  grunt.registerTask('default', ['deploy', 'runTests']);
+  grunt.registerTask('default', ['deploy', 'test']);
 
 };
